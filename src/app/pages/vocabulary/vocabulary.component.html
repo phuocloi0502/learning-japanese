@@ -1,0 +1,169 @@
+<div class="container-fluid">
+  <!-- Header -->
+  <div class="row">
+    <div class="col-12">
+      <div class="page-header text-center mb-4">
+        <h1 class="display-4 fw-bold">📚 {{ title }}</h1>
+        <p class="lead">{{ description }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Level Selector -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-6">
+              <h5 class="mb-0">🎯 Chọn cấp độ:</h5>
+            </div>
+            <div class="col-md-6">
+              <select class="form-select" [(ngModel)]="selectedLevel" (change)="onLevelChange()">
+                <option *ngFor="let level of availableLevels" [value]="level">
+                  {{ level }} -
+                  {{
+                    level === 'N5'
+                      ? 'Cơ bản'
+                      : level === 'N4'
+                      ? 'Sơ cấp'
+                      : level === 'N3'
+                      ? 'Trung cấp'
+                      : level === 'N2'
+                      ? 'Trung cao cấp'
+                      : 'Cao cấp'
+                  }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body text-center">
+          <div class="spinner-border text-primary mb-3" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <h5>Đang tải dữ liệu {{ selectedLevel }}...</h5>
+          <p class="text-muted">Vui lòng chờ trong giây lát</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="row">
+    <div class="col-12">
+      <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">❌ Lỗi!</h4>
+        <p>{{ error }}</p>
+        <hr />
+        <p class="mb-0">
+          <button class="btn btn-outline-danger" (click)="loadVocabularyData()">🔄 Thử lại</button>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vocabulary Content -->
+  <div *ngIf="!isLoading && !error && chapters.length > 0" class="row">
+    <div class="col-12">
+      <!-- Stats -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-md-4">
+              <div class="stat-item">
+                <div class="stat-number text-primary">{{ chapters.length }}</div>
+                <div class="stat-label">Chương</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="stat-item">
+                <div class="stat-number text-success">{{ getTotalVocabularyCount() }}</div>
+                <div class="stat-label">Từ vựng</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="stat-item">
+                <div class="stat-number text-warning">{{ selectedLevel }}</div>
+                <div class="stat-label">Cấp độ</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapters -->
+      <div class="row">
+        <div class="col-lg-6 col-xl-4 mb-4" *ngFor="let chapter of chapters">
+          <div class="card h-100 chapter-card">
+            <div class="card-header">
+              <h5 class="card-title mb-0">
+                📖 Chương {{ chapter.chapter_number }}: {{ chapter.chapter_name }}
+              </h5>
+            </div>
+            <div class="card-body">
+              <p class="card-text">
+                <strong>{{ chapter.lessonList.length }}</strong> bài học
+              </p>
+
+              <div class="lessons-preview">
+                <h6>📝 Danh sách bài học ({{ chapter.lessonList.length }} bài):</h6>
+                <ul class="lesson-list">
+                  <li *ngFor="let lesson of chapter.lessonList">
+                    <a
+                      [routerLink]="[
+                        '/vocabulary',
+                        selectedLevel,
+                        chapter.chapter_number,
+                        lesson.lesson_number
+                      ]"
+                      class="lesson-link"
+                    >
+                      <span class="lesson-number">{{ lesson.lesson_number }}.</span>
+                      {{ lesson.lesson_name }}
+                      <small class="text-muted">
+                        (
+                        <span
+                          class="remembered-count"
+                          [ngClass]="{ zero: (rememberedCountMap[lesson.lesson_id] || 0) === 0 }"
+                          >{{ rememberedCountMap[lesson.lesson_id] || 0 }}</span
+                        >
+                        / {{ lesson.vocabularyList.length }} từ )
+                      </small>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <!-- <div class="card-footer">
+              <button class="btn btn-primary btn-sm">
+                🎯 Học ngay
+              </button>
+            </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && !error && chapters.length === 0" class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body text-center">
+          <h5 class="card-title">📭 Chưa có dữ liệu</h5>
+          <p class="card-text">Chưa có dữ liệu từ vựng cho cấp độ {{ selectedLevel }}.</p>
+          <button class="btn btn-primary" (click)="loadVocabularyData()">🔄 Tải lại</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

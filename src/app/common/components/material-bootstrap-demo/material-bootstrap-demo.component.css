@@ -1,0 +1,54 @@
+/* Material + Bootstrap Demo Component */
+
+.card {
+  border: none;
+  box-shadow: var(--shadow-card);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+.mat-mdc-card {
+  transition: all 0.3s ease;
+}
+
+.mat-mdc-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Custom Material form field styling */
+.mat-mdc-form-field {
+  margin-bottom: var(--spacing-md);
+}
+
+/* Progress bar customization */
+.progress {
+  height: 8px;
+  border-radius: var(--border-radius-sm);
+}
+
+.progress-bar {
+  border-radius: var(--border-radius-sm);
+}
+
+/* Button spacing */
+.mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-stroked-button {
+  margin-right: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Chip styling */
+mat-chip-set {
+  margin-bottom: var(--spacing-md);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-stroked-button {
+    width: 100%;
+    margin-right: 0;
+  }
+}

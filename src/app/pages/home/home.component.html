@@ -1,0 +1,97 @@
+<div class="container-fluid">
+  <!-- Hero Section -->
+  <div class="row">
+    <div class="col-12">
+      <div class="page-header text-center mb-5">
+        <h1 class="display-4 fw-bold">🇯🇵 {{ title }}</h1>
+        <p class="lead">{{ description }}</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Main Features - Simple Cards -->
+  <div class="row">
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="card h-100">
+            <div class="card-body text-center">
+              <div class="mb-3">
+                <span class="display-1">{{ vocabularyCategory.icon }}</span>
+              </div>
+              <h5 class="card-title">Từ Vựng</h5>
+              <p class="card-text">Học từ vựng tiếng Nhật theo chủ đề từ cơ bản đến nâng cao</p>
+              <a routerLink="/vocabulary" class="btn btn-primary">Bắt đầu học</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- <div class="col-lg-4 col-md-6 mb-4">
+          <div class="card h-100">
+            <div class="card-body text-center">
+              <div class="mb-3">
+                <span class="display-1">🎴</span>
+              </div>
+              <h5 class="card-title">Flash Card</h5>
+              <p class="card-text">Luyện tập từ vựng với flash card và theo dõi tiến độ học tập</p>
+              <a routerLink="/flashcard" class="btn btn-primary">Luyện tập ngay</a>
+            </div>
+          </div>
+        </div> -->
+    
+    <div class="col-lg-4 col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body text-center">
+          <div class="mb-3">
+            <span class="display-1">{{ grammarCategory.icon }}</span>
+          </div>
+          <h5 class="card-title">Ngữ Pháp</h5>
+          <p class="card-text">Nắm vững ngữ pháp tiếng Nhật từ N5 đến N3</p>
+          <a routerLink="/grammar" class="btn btn-primary">Bắt đầu học</a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-4 col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body text-center">
+          <div class="mb-3">
+            <span class="display-1">{{ kanjiCategory.icon }}</span>
+          </div>
+          <h5 class="card-title">Kanji</h5>
+          <p class="card-text">Học chữ Kanji theo bộ thủ và cấp độ JLPT</p>
+          <a routerLink="/kanji" class="btn btn-primary">Bắt đầu học</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Stats Section -->
+  <div class="row mt-5">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title text-center mb-4">📊 Thống kê học tập</h5>
+          <div class="row text-center">
+            <div class="col-md-4">
+              <div class="stat-item">
+                <div class="stat-number text-primary">1000+</div>
+                <div class="stat-label">Từ vựng</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="stat-item">
+                <div class="stat-number text-success">500+</div>
+                <div class="stat-label">Ngữ pháp</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="stat-item">
+                <div class="stat-number text-warning">1000+</div>
+                <div class="stat-label">Kanji</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

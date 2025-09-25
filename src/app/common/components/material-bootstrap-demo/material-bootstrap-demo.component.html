@@ -1,0 +1,128 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <h2 class="text-center mb-4">🎨 Material + Bootstrap Demo</h2>
+    </div>
+  </div>
+  
+  <div class="row">
+    <!-- Material Card with Bootstrap Grid -->
+    <div class="col-md-6 col-lg-4 mb-4">
+      <mat-card class="h-100">
+        <mat-card-header>
+          <mat-card-title>📚 Từ Vựng N5</mat-card-title>
+          <mat-card-subtitle>100 từ cơ bản</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p>Học từ vựng cơ bản nhất trong tiếng Nhật</p>
+          <mat-progress-bar mode="determinate" [value]="progressValue"></mat-progress-bar>
+          <p class="mt-2">Tiến độ: {{ progressValue }}%</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button color="primary">Bắt đầu học</button>
+          <button mat-button>Chi tiết</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+    
+    <!-- Bootstrap Card with Material Components -->
+    <div class="col-md-6 col-lg-4 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">📖 Ngữ Pháp N4</h5>
+          <p class="card-text">Ngữ pháp trung cấp cho người đã có nền tảng</p>
+          
+          <!-- Material Form Field -->
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Nhập câu ví dụ</mat-label>
+            <input matInput placeholder="Ví dụ: 私は学生です">
+            <mat-icon matSuffix>edit</mat-icon>
+          </mat-form-field>
+          
+          <!-- Material Chips -->
+          <div class="mb-3">
+            <mat-chip-set>
+              <mat-chip *ngFor="let chip of chips">{{ chip }}</mat-chip>
+            </mat-chip-set>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button mat-raised-button color="primary" class="me-2">Học ngay</button>
+          <button mat-stroked-button>Lưu lại</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Mixed Components -->
+    <div class="col-md-12 col-lg-4 mb-4">
+      <mat-card class="h-100">
+        <mat-card-header>
+          <mat-card-title>🈯 Kanji N3</mat-card-title>
+          <mat-card-subtitle>650 chữ nâng cao</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="row">
+            <div class="col-6">
+              <h6>Đã học:</h6>
+              <p class="text-success">450/650</p>
+            </div>
+            <div class="col-6">
+              <h6>Còn lại:</h6>
+              <p class="text-warning">200 chữ</p>
+            </div>
+          </div>
+          
+          <!-- Bootstrap Progress Bar -->
+          <div class="progress mb-3">
+            <div class="progress-bar bg-success" style="width: 69%"></div>
+          </div>
+          
+          <!-- Material Buttons -->
+          <div class="d-grid gap-2">
+            <button mat-raised-button color="accent">Tiếp tục học</button>
+            <button mat-stroked-button>Ôn tập</button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+  
+  <!-- Form Example -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>📝 Form Demo</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="row">
+            <div class="col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Tên</mat-label>
+                <input matInput>
+              </mat-form-field>
+            </div>
+            <div class="col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Email</mat-label>
+                <input matInput type="email">
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Ghi chú</mat-label>
+                <textarea matInput rows="3"></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+        </mat-card-content>
+        <mat-card-actions class="d-flex justify-content-end">
+          <button mat-button>Hủy</button>
+          <button mat-raised-button color="primary">Lưu</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+</div>

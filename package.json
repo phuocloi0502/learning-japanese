@@ -5,9 +5,11 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:prod": "ng build --configuration=production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:learning-japanese": "node dist/learning-japanese/server/server.mjs"
+    "serve:ssr:learning-japanese": "node dist/learning-japanese/server/server.mjs",
+    "deploy": "npm run build:prod && npx firebase deploy"
   },
   "prettier": {
     "printWidth": 100,
@@ -23,15 +25,20 @@
   },
   "private": true,
   "dependencies": {
+    "@angular/cdk": "^20.2.4",
     "@angular/common": "^20.2.0",
     "@angular/compiler": "^20.2.0",
     "@angular/core": "^20.2.0",
+    "@angular/fire": "^20.0.1",
     "@angular/forms": "^20.2.0",
+    "@angular/material": "^20.2.4",
     "@angular/platform-browser": "^20.2.0",
     "@angular/platform-server": "^20.2.0",
     "@angular/router": "^20.2.0",
     "@angular/ssr": "^20.2.2",
+    "bootstrap": "^5.3.3",
     "express": "^5.1.0",
+    "firebase": "^12.3.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
@@ -42,6 +49,7 @@
     "@types/express": "^5.0.1",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^20.17.19",
+    "firebase-tools": "^13.15.0",
     "jasmine-core": "~5.9.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",

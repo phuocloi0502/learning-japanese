@@ -1,0 +1,101 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h1 class="login-title">🇯🇵 Học Tiếng Nhật</h1>
+      <p class="login-subtitle">
+        {{ isSignUp ? 'Tạo tài khoản mới' : 'Đăng nhập vào tài khoản' }}
+      </p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="login-form">
+      <!-- Email Input -->
+      <div class="form-group">
+        <label for="email" class="form-label">📧 Email</label>
+        <input
+          type="email"
+          id="email"
+          class="form-control"
+          [(ngModel)]="email"
+          name="email"
+          placeholder="Nhập email của bạn"
+          required
+          [disabled]="isLoading"
+        />
+      </div>
+
+      <!-- Password Input -->
+      <div class="form-group">
+        <label for="password" class="form-label">🔒 Mật khẩu</label>
+        <input
+          type="password"
+          id="password"
+          class="form-control"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="Nhập mật khẩu"
+          required
+          [disabled]="isLoading"
+        />
+      </div>
+
+      <!-- Confirm Password Input (Sign Up only) -->
+      <div class="form-group" *ngIf="isSignUp">
+        <label for="confirmPassword" class="form-label">🔒 Xác nhận mật khẩu</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          class="form-control"
+          [(ngModel)]="confirmPassword"
+          name="confirmPassword"
+          placeholder="Nhập lại mật khẩu"
+          required
+          [disabled]="isLoading"
+        />
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="error" class="alert alert-danger">
+        {{ error }}
+      </div>
+
+      <!-- Success Message -->
+      <div *ngIf="success" class="alert alert-success">
+        {{ success }}
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        class="btn btn-primary btn-login"
+        [disabled]="isLoading"
+      >
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </span>
+        {{ isLoading ? 'Đang xử lý...' : (isSignUp ? 'Đăng ký' : 'Đăng nhập') }}
+      </button>
+    </form>
+
+    <!-- Toggle Mode -->
+    <div class="login-footer">
+      <p class="text-center">
+        {{ isSignUp ? 'Đã có tài khoản?' : 'Chưa có tài khoản?' }}
+        <button
+          type="button"
+          class="btn btn-link"
+          (click)="toggleMode()"
+          [disabled]="isLoading"
+        >
+          {{ isSignUp ? 'Đăng nhập' : 'Đăng ký' }}
+        </button>
+      </p>
+    </div>
+
+    <!-- Demo Account Info -->
+    <div class="demo-info">
+      <h6>🎯 Tài khoản demo:</h6>
+      <p><strong>Email:</strong> demo@example.com</p>
+      <p><strong>Mật khẩu:</strong> 123456</p>
+    </div>
+  </div>
+</div>

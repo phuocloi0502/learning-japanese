@@ -1,0 +1,209 @@
+<div class="container-fluid">
+  <!-- Header + Statistics chung 1 nền -->
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div
+        class="row g-0 align-items-center bg-light rounded-3 ps-4 mt-2"
+        style="
+          border-left: 6px solid #667eea;
+          min-height: 120px;
+          height: 120px;
+          justify-content: center;
+        "
+      >
+        <div
+          class="col-md-6 d-flex flex-row align-items-center justify-content-center"
+          style="height: 120px"
+        >
+          <div
+            class="me-3 d-flex align-items-center justify-content-center"
+            style="font-size: 2.5rem; height: 120px"
+          >
+            🎴
+          </div>
+          <div class="flex-grow-1 d-flex flex-column justify-content-center" style="height: 100%">
+            <h2 class="fw-bold mb-1" style="font-size: 2rem; color: #333">
+              {{ level }} - Chương {{ chapterNumber }} - Bài {{ lessonNumber }}
+            </h2>
+            <div class="lead text-muted mb-0" *ngIf="chapter && lesson" style="font-size: 1.1rem">
+              {{ chapter.chapter_name }} - {{ lesson.lesson_name }}
+            </div>
+          </div>
+        </div>
+        <div
+          class="col-md-6 d-flex flex-column justify-content-center align-items-end"
+          style="height: 120px"
+        >
+          <div class="d-flex flex-row w-100 mb-2 justify-content-center flex-wrap gap-lg-5">
+            <button
+              class="btn btn-action text-primary flex-fill"
+              (click)="loadLessonData()"
+              [class.active]="filterMode === 'all'"
+            >
+              <div class="stat-number">{{ totalCardsOfLesson }}</div>
+              Tổng từ
+            </button>
+            <button
+              class="btn btn-action text-success flex-fill"
+              (click)="listRememberedVocabulary(true)"
+              [class.active]="filterMode === 'remembered'"
+            >
+              <div class="stat-number">{{ rememberedCards }}</div>
+              Đã nhớ
+            </button>
+            <button
+              class="btn btn-action text-danger flex-fill"
+              (click)="listRememberedVocabulary(false)"
+              [class.active]="filterMode === 'notRemembered'"
+            >
+              <div class="stat-number">{{ notRememberedCards }}</div>
+              Chưa nhớ
+            </button>
+            <button class="btn btn-action text-info flex-fill">
+              <div class="stat-number text-info">{{ getProgressPercentage() }}%</div>
+              Tiến độ
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body text-center">
+          <div class="spinner-border text-primary mb-3" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <h5>Đang tải dữ liệu...</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="row">
+    <div class="col-12">
+      <div class="alert alert-danger" role="alert">
+        {{ error }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Flash Card -->
+  <div *ngIf="!isLoading && !error && vocabularyList.length > 0 && !isEnd" class="row">
+    <div class="col-12">
+      <div class="flashcard-container">
+        <!-- Progress Bar -->
+        {{ currentIndex + 1 }} / {{ totalCardsCurrent }}
+        <div class="progress mb-4">
+          <div
+            class="progress-bar"
+            role="progressbar"
+            [style.width.%]="((currentIndex + 1) / totalCardsCurrent) * 100"
+            [attr.aria-valuenow]="currentIndex + 1"
+            aria-valuemin="0"
+            [attr.aria-valuemax]="totalCardsOfLesson"
+          ></div>
+        </div>
+
+        <!-- Card -->
+        <div class="flashcard" (click)="toggleAnswer()">
+          <div class="card-content">
+            <div class="vocab-kanji">{{ getCurrentVocabulary()?.kanji }}</div>
+            <div class="vocab-furigana">{{ getCurrentVocabulary()?.furigana }}</div>
+
+            <div class="vocab-answer" *ngIf="showAnswer">
+              <div class="vocab-meaning">{{ getCurrentVocabulary()?.meaning }}</div>
+              <div class="vocab-example" *ngIf="getCurrentVocabulary()?.example">
+                <div
+                  class="example-japanese"
+                  [innerHTML]="getCurrentVocabulary()?.example | ruby"
+                ></div>
+                <!-- <div class="example-japanese">{{ getCurrentVocabulary()?.example }}</div> -->
+                <div class="example-meaning">{{ getCurrentVocabulary()?.example_meaning }}</div>
+              </div>
+            </div>
+            <!--             
+            <div class="card-hint">
+              {{ showAnswer ? '👆 Nhấn để ẩn nghĩa' : '👆 Nhấn để xem nghĩa' }}
+            </div> -->
+          </div>
+        </div>
+        <div class="vocab-actions-flashcard">
+          <button
+            *ngIf="getCurrentVocabulary()?.sound_url"
+            class="btn btn-lg btn-outline-primary audio-btn"
+            [class.playing]="isAudioPlaying()"
+            (click)="playAudio()"
+            [title]="isAudioPlaying() ? 'Tạm dừng' : 'Nghe phát âm'"
+          >
+            {{ getAudioButtonText() }}
+          </button>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="card-actions">
+          <div class="row">
+            <div class="col-md-3">
+              <button
+                class="btn btn-action"
+                (click)="previousCard()"
+                [disabled]="currentIndex === 0"
+              >
+                ⬅️ Trước
+              </button>
+            </div>
+            <div class="col-md-6">
+              <div class="action-buttons">
+                <button
+                  class="btn btn-action me-2 text-white"
+                  style="background-color: green"
+                  (click)="markAsRemembered()"
+                >
+                  Đã nhớ
+                </button>
+                <button
+                  class="btn btn-action text-white"
+                  style="background-color: red"
+                  (click)="markAsNotRemembered()"
+                >
+                  Chưa nhớ
+                </button>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <button
+                class="btn btn-action"
+                (click)="nextCard()"
+                [disabled]="currentIndex === vocabularyList.length - 1"
+              >
+                Tiếp ➡️
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Authentication Notice -->
+        <div *ngIf="!isAuthenticated" class="alert alert-info text-center mt-4">
+          <h6>🔐 Đăng nhập để lưu tiến độ học tập</h6>
+          <p>Đăng nhập để lưu trạng thái "đã nhớ" và "chưa nhớ" của từng từ vựng</p>
+          <button class="btn btn-primary" (click)="goToLogin()">Đăng nhập ngay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Data State -->
+  <div *ngIf="(!isLoading && !error && vocabularyList.length === 0) || isEnd" class="row">
+    <div class="col-12">
+      <div class="text-center">
+        <h4 class="alert-heading">Không có từ vựng nào cả</h4>
+
+        <button class="btn btn-primary" (click)="loadLessonData()">Học lại</button>
+      </div>
+    </div>
+  </div>
+</div>

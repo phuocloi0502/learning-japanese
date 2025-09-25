@@ -1,0 +1,17 @@
+<ng-container [ngSwitch]="!!routerLink || !!href">
+  <!-- Router Link Button -->
+  <a *ngSwitchCase="true" 
+     [routerLink]="routerLink"
+     [href]="href"
+     [class]="getButtonClasses()"
+     [class.disabled]="disabled">
+    <ng-content></ng-content>
+  </a>
+  
+  <!-- Regular Button -->
+  <button *ngSwitchDefault
+          [class]="getButtonClasses()"
+          [disabled]="disabled">
+    <ng-content></ng-content>
+  </button>
+</ng-container>

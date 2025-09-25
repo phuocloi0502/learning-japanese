@@ -1,0 +1,64 @@
+<nav class="navbar">
+  <div class="nav-mobile">
+    <!-- Hamburger for mobile -->
+    <button class="navbar-toggler d-md-none me-2" type="button" (click)="toggleMenu()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <!-- Header: Hiển thị danh mục hiện tại -->
+    <!-- <div class="nav-current-title fw-bold">
+      {{ currentMenuLabel }}
+    </div> -->
+  </div>
+  <div class="nav-container d-flex">
+    <!-- Overlay menu for mobile -->
+    <div class="mobile-menu-overlay" [class.open]="showMenu" (click)="toggleMenu()"></div>
+    <div class="mobile-menu" [class.open]="showMenu">
+      <ul class="nav-menu-mobile">
+        <li class="nav-item" *ngFor="let item of menuItems">
+          <a
+            [routerLink]="item.route"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: false }"
+            class="nav-link"
+            (click)="toggleMenu()"
+          >
+            <span class="nav-icon">{{ item.icon }}</span>
+            {{ item.label }}
+          </a>
+        </li>
+      </ul>
+    </div>
+    <!-- Desktop menu -->
+    <ul class="nav-menu d-none d-md-flex ms-4 mb-0">
+      <li class="nav-item" *ngFor="let item of menuItems">
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: false }"
+          class="nav-link"
+        >
+          <span class="nav-icon">{{ item.icon }}</span>
+          {{ item.label }}
+        </a>
+      </li>
+      <div class="nav-user ms-auto d-flex align-items-center">
+        <ng-container *ngIf="currentUser; else loginBtn">
+          <span
+            #userTooltip="matTooltip"
+            matTooltip="{{ currentUser.email }}"
+            matTooltipShowDelay="999999"
+            matTooltipHideDelay="0"
+            class="user-icon position-relative"
+            style="font-size: 1.5rem; cursor: pointer"
+            (click)="userTooltip.show(0)"
+            >👤</span
+          >
+          <button class="btn btn-outline-light btn-sm ms-2" (click)="logout()">Đăng xuất</button>
+        </ng-container>
+        <ng-template #loginBtn>
+          <a routerLink="/login" class="btn btn-outline-light btn-sm ms-2"> Đăng nhập </a>
+        </ng-template>
+      </div>
+    </ul>
+  </div>
+</nav>

@@ -1,0 +1,13 @@
+<div [class]="getCardClasses()">
+  <div class="card-header" *ngIf="title || icon">
+    <div class="card-icon" *ngIf="icon">{{ icon }}</div>
+    <div class="card-title-section">
+      <h3 class="card-title" *ngIf="title">{{ title }}</h3>
+      <p class="card-subtitle" *ngIf="subtitle">{{ subtitle }}</p>
+    </div>
+  </div>
+  
+  <div class="card-content">
+    <ng-content></ng-content>
+  </div>
+</div>

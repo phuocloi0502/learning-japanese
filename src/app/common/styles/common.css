@@ -1,0 +1,366 @@
+/* Common Styles - Shared across all components */
+/* Compatible with Angular Material + Bootstrap */
+
+/* ===== FONT SYSTEM ===== */
+:root {
+  --font-family-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+}
+
+/* ===== TYPOGRAPHY ===== */
+.text-primary {
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-normal);
+}
+
+.text-heading {
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.text-bold {
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ===== COLORS ===== */
+:root {
+  --color-primary: #667eea;
+  --color-secondary: #764ba2;
+  --color-text-primary: #333;
+  --color-text-secondary: #666;
+  --color-text-light: #999;
+  --color-background: #f8f9fa;
+  --color-white: #ffffff;
+  --color-border: #f0f0f0;
+  --color-shadow: rgba(0, 0, 0, 0.1);
+  --color-shadow-hover: rgba(0, 0, 0, 0.15);
+}
+
+/* ===== SPACING ===== */
+:root {
+  --spacing-xs: 0.25rem;   /* 4px */
+  --spacing-sm: 0.5rem;    /* 8px */
+  --spacing-md: 1rem;      /* 16px */
+  --spacing-lg: 1.5rem;    /* 24px */
+  --spacing-xl: 2rem;      /* 32px */
+  --spacing-2xl: 3rem;     /* 48px */
+  --spacing-3xl: 4rem;     /* 64px */
+}
+
+/* ===== BORDER RADIUS ===== */
+:root {
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 20px;
+  --border-radius-full: 50px;
+}
+
+/* ===== SHADOWS ===== */
+:root {
+  --shadow-sm: 0 2px 4px var(--color-shadow);
+  --shadow-md: 0 4px 8px var(--color-shadow);
+  --shadow-lg: 0 8px 16px var(--color-shadow);
+  --shadow-xl: 0 12px 24px var(--color-shadow);
+  --shadow-card: 0 5px 20px var(--color-shadow);
+  --shadow-card-hover: 0 10px 30px var(--color-shadow-hover);
+}
+
+/* ===== GRADIENTS ===== */
+:root {
+  --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  --gradient-background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  --gradient-navbar: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* ===== BOOTSTRAP INTEGRATION ===== */
+/* Override Bootstrap variables to match our design system */
+:root {
+  --bs-primary: var(--color-primary);
+  --bs-secondary: var(--color-secondary);
+  --bs-success: #28a745;
+  --bs-info: #17a2b8;
+  --bs-warning: #ffc107;
+  --bs-danger: #dc3545;
+  --bs-light: #f8f9fa;
+  --bs-dark: #343a40;
+  --bs-body-font-family: var(--font-family-primary);
+  --bs-body-color: var(--color-text-primary);
+  --bs-body-bg: var(--color-background);
+}
+
+/* ===== MATERIAL DESIGN INTEGRATION ===== */
+/* Custom Material theme colors */
+.mat-mdc-theme {
+  --mdc-theme-primary: var(--color-primary);
+  --mdc-theme-secondary: var(--color-secondary);
+  --mdc-theme-surface: var(--color-white);
+  --mdc-theme-background: var(--color-background);
+  --mdc-theme-on-primary: var(--color-white);
+  --mdc-theme-on-secondary: var(--color-white);
+  --mdc-theme-on-surface: var(--color-text-primary);
+  --mdc-theme-on-background: var(--color-text-primary);
+}
+
+/* ===== COMMON COMPONENTS ===== */
+
+/* Page Container */
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-3xl) var(--spacing-xl);
+}
+
+/* Page Header */
+.page-header {
+  text-align: center;
+  margin-bottom: var(--spacing-3xl);
+}
+
+.page-header h1 {
+  color: var(--color-text-primary);
+  font-size: 2.5rem;
+  margin-bottom: var(--spacing-lg);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family-primary);
+}
+
+.page-header p {
+  color: var(--color-text-secondary);
+  font-size: 1.2rem;
+  font-family: var(--font-family-primary);
+}
+
+/* Card Component */
+.card {
+  background: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-2xl);
+  box-shadow: var(--shadow-card);
+  transition: all 0.3s ease;
+  border: 1px solid var(--color-border);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.card h3 {
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-lg);
+  font-size: 1.3rem;
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family-primary);
+}
+
+.card p {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-2xl);
+  line-height: 1.6;
+  font-family: var(--font-family-primary);
+}
+
+/* Button Components */
+.btn {
+  display: inline-block;
+  padding: var(--spacing-md) var(--spacing-2xl);
+  border-radius: var(--border-radius-full);
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-normal);
+  font-size: 1rem;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.btn-primary {
+  background: var(--gradient-primary);
+  color: var(--color-white);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+  background: var(--color-white);
+  color: var(--color-text-primary);
+  border: 2px solid var(--color-border);
+}
+
+.btn-secondary:hover {
+  background: var(--color-background);
+  transform: translateY(-2px);
+}
+
+/* Grid System */
+.grid {
+  display: grid;
+  gap: var(--spacing-2xl);
+}
+
+.grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.grid-4 {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+/* Flex Utilities */
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Text Utilities */
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* Spacing Utilities */
+.mb-sm { margin-bottom: var(--spacing-sm); }
+.mb-md { margin-bottom: var(--spacing-md); }
+.mb-lg { margin-bottom: var(--spacing-lg); }
+.mb-xl { margin-bottom: var(--spacing-xl); }
+.mb-2xl { margin-bottom: var(--spacing-2xl); }
+
+.mt-sm { margin-top: var(--spacing-sm); }
+.mt-md { margin-top: var(--spacing-md); }
+.mt-lg { margin-top: var(--spacing-lg); }
+.mt-xl { margin-top: var(--spacing-xl); }
+.mt-2xl { margin-top: var(--spacing-2xl); }
+
+.p-sm { padding: var(--spacing-sm); }
+.p-md { padding: var(--spacing-md); }
+.p-lg { padding: var(--spacing-lg); }
+.p-xl { padding: var(--spacing-xl); }
+.p-2xl { padding: var(--spacing-2xl); }
+
+/* ===== BOOTSTRAP + MATERIAL UTILITIES ===== */
+
+/* Bootstrap Grid with Material spacing */
+.container-fluid {
+  padding-left: var(--spacing-xl);
+  padding-right: var(--spacing-xl);
+}
+
+.row {
+  margin-left: calc(-1 * var(--spacing-md));
+  margin-right: calc(-1 * var(--spacing-md));
+}
+
+.col, [class*="col-"] {
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
+}
+
+/* Material + Bootstrap button combinations */
+.btn {
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-normal);
+  border-radius: var(--border-radius-sm);
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-secondary);
+  border-color: var(--color-secondary);
+  transform: translateY(-1px);
+}
+
+/* Material cards with Bootstrap spacing */
+.mat-mdc-card {
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-card);
+  margin-bottom: var(--spacing-lg);
+}
+
+.mat-mdc-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+/* Material form fields with Bootstrap grid */
+.mat-mdc-form-field {
+  width: 100%;
+  margin-bottom: var(--spacing-md);
+}
+
+/* Custom Material theme overrides */
+.mat-mdc-button.mat-primary {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.mat-mdc-button.mat-primary:hover {
+  background-color: var(--color-secondary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page-container {
+    padding: var(--spacing-2xl) var(--spacing-lg);
+  }
+  
+  .page-header h1 {
+    font-size: 2.2rem;
+  }
+  
+  .page-header p {
+    font-size: 1.1rem;
+  }
+  
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: 1fr;
+  }
+  
+  .container-fluid {
+    padding-left: var(--spacing-md);
+    padding-right: var(--spacing-md);
+  }
+}

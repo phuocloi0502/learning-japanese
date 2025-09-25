@@ -1,0 +1,255 @@
+/* Vocabulary page specific styles */
+
+.page-header h1 {
+  font-size: 3rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+/* Simple loading styles */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+.page-header p {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 20px;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.stat-label {
+  font-size: 1.1rem;
+  color: #666;
+  font-weight: 500;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.chapter-card {
+  border: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.chapter-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.chapter-card .card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 20px;
+}
+
+.chapter-card .card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.chapter-card .card-body {
+  padding: 25px;
+}
+
+.lessons-preview {
+  margin-top: 15px;
+}
+
+.lessons-preview h6 {
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.lesson-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.lesson-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.lesson-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: all 0.2s ease;
+  padding: 5px;
+  border-radius: 8px;
+}
+
+.lesson-link:hover {
+  background-color: #f8f9fa;
+  color: #667eea;
+  text-decoration: none;
+}
+
+.lesson-list li:last-child {
+  border-bottom: none;
+}
+
+.lesson-number {
+  background: #667eea;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-right: 10px;
+}
+
+.chapter-card .card-footer {
+  background: #f8f9fa;
+  border: none;
+  padding: 20px;
+  text-align: center;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  padding: 10px 25px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.form-select {
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 12px 15px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.alert {
+  border-radius: 12px;
+  border: none;
+  padding: 20px;
+}
+
+.alert-danger {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  color: white;
+}
+
+.alert-danger .alert-heading {
+  color: white;
+  font-weight: 600;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+.lesson-list .lesson-link small.text-muted {
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.lesson-list .lesson-link .remembered-count {
+  color: #22c55e;
+  font-weight: bold;
+  font-size: 1.1rem;
+  background: rgba(34,197,94,0.12);
+  border-radius: 6px;
+  padding: 2px 8px;
+  margin: 0 2px;
+  box-shadow: 0 2px 8px rgba(34,197,94,0.08);
+  transition: background 0.2s;
+}
+
+.lesson-list .lesson-link:hover .remembered-count {
+  background: rgba(34,197,94,0.22);
+}
+
+.lesson-list .lesson-link .remembered-count.zero {
+  color: #ef4444;
+  background: rgba(239,68,68,0.12);
+  box-shadow: 0 2px 8px rgba(239,68,68,0.08);
+}
+
+.lesson-list .lesson-link:hover .remembered-count.zero {
+  background: rgba(239,68,68,0.22);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page-header h1 {
+    font-size: 2.2rem;
+  }
+  
+  .page-header p {
+    font-size: 1rem;
+  }
+  
+  .stat-number {
+    font-size: 2rem;
+  }
+  
+  .chapter-card .card-header {
+    padding: 15px;
+  }
+  
+  .chapter-card .card-title {
+    font-size: 1.1rem;
+  }
+  
+  .chapter-card .card-body {
+    padding: 20px;
+  }
+  
+  .chapter-card .card-footer {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 576px) {
+  .page-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .stat-item {
+    padding: 15px;
+  }
+  
+  .stat-number {
+    font-size: 1.8rem;
+  }
+  
+  .lesson-list li {
+    font-size: 0.9rem;
+  }
+}
