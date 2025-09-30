@@ -1,0 +1,141 @@
+<div class="container-fluid pb-3">
+  <!-- Header + Statistics chung 1 nền -->
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div
+        class="row g-0 align-items-center bg-light rounded-3 ps-4 mt-2"
+        style="
+          border-left: 6px solid #667eea;
+          min-height: 120px;
+          height: 120px;
+          justify-content: center;
+        "
+      >
+        <div
+          class="col-md-6 d-flex flex-row align-items-center justify-content-center"
+          style="height: 120px"
+        >
+          <div
+            class="me-3 d-flex align-items-center justify-content-center"
+            style="font-size: 2.5rem; height: 120px"
+          >
+            🎴
+          </div>
+          <div class="flex-grow-1 d-flex flex-column justify-content-center" style="height: 100%">
+            <h2 class="fw-bold mb-1" style="font-size: 2rem; color: #333">
+              {{ level }} - Chương {{ chapterNumber }} - Bài {{ lessonNumber }}
+            </h2>
+            <div class="lead text-muted mb-0" *ngIf="chapter && lesson" style="font-size: 1.1rem">
+              {{ chapter.chapter_name }} - {{ lesson.lesson_name }}
+            </div>
+          </div>
+        </div>
+        <div
+          class="col-md-6 d-flex flex-column justify-content-center align-items-end"
+          style="height: 120px"
+        ></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body text-center">
+          <div class="spinner-border text-primary mb-3" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <h5>Đang tải dữ liệu...</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="row">
+    <div class="col-12">
+      <div class="alert alert-danger" role="alert">
+        {{ error }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz Practice -->
+  <div *ngIf="!isLoading && !error && vocabularyList.length > 0" class="row">
+    <div class="container my-5">
+      <div class="row justify-content-center mb-4">
+        <div class="col-lg-8 col-md-10">
+          <div class="card shadow-lg border-0 p-4">
+            <div
+              *ngIf="showCorrectAnswers"
+              class="d-flex justify-content-end align-items-center mb-3"
+            >
+              <h3 class="text-primary me-5 mt-2">
+                <span style="color: #333">Đúng: </span> {{ checkAnswer() }}/{{
+                  vocabularyList.length
+                }}
+              </h3>
+              <button class="btn btn-success" type="button" (click)="loadLessonData()">
+                Làm lại
+              </button>
+            </div>
+
+            <div
+              *ngFor="let item of vocabularyList; let qIndex = index; trackBy: trackQuestion"
+              class="mb-1 p-2"
+              [ngClass]="{
+                'bg-opacity-25 bg-danger rounded-4': isWrongAnswer(qIndex)
+              }"
+            >
+              <p class="card-text fs-5 fw-bold text-dark mb-4">
+                Câu {{ qIndex + 1 }}: {{ item.kanji }}
+              </p>
+
+              <div class="ms-0 d-grid gap-2 mb-4 ms-4">
+                <div
+                  *ngFor="let option of item.options; let optIndex = index; trackBy: trackOption"
+                  class="form-check p-1 rounded-3 d-flex align-items-center"
+                >
+                  <input
+                    class="form-check-input flex-shrink-0 me-3"
+                    type="radio"
+                    name="answer-group-{{ qIndex }}"
+                    id="answer-{{ qIndex }}-{{ optIndex }}"
+                    [value]="optIndex"
+                    (change)="onAnswerSelected(qIndex, optIndex)"
+                    [checked]="userAnswers[qIndex] === optIndex"
+                    [ngClass]="{
+                      'border-success bg-success': isCorrectOption(qIndex, optIndex),
+                      'border-danger bg-danger': isWrongOption(qIndex, optIndex)
+                    }"
+                  />
+                  <label
+                    class="form-check-label w-100"
+                    for="answer-{{ qIndex }}-{{ optIndex }}"
+                    [ngClass]="{
+                      'text-success fw-bold': isCorrectOption(qIndex, optIndex),
+                      'text-danger fw-bold': isWrongOption(qIndex, optIndex)
+                    }"
+                  >
+                    {{ option.text }}
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div>
+              <button
+                type="button"
+                class="btn btn-primary mt-3"
+                (click)="checkAnswer()"
+                [disabled]="showCorrectAnswers"
+              >
+                Kiểm tra
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
