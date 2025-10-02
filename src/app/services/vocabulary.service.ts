@@ -35,23 +35,51 @@ export interface Chapter {
   providedIn: 'root',
 })
 export class VocabularyService {
-  private cache: Map<string, Chapter[]> = new Map();
+  private database: any;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private firebaseService: FirebaseService) {
+    this.database = this.firebaseService.getDatabase();
+  }
+
+  async getVocabularyData1(level: string): Promise<Chapter[]> {
+    try {
+      const statusRef = ref(this.database, `vocabulary_data/${level}`);
+      const snapshot = await get(statusRef);
+
+      if (snapshot.exists()) {
+        return snapshot.val() as Chapter[];
+      }
+      return [];
+    } catch (error) {
+      throw error;
+    }
+  }
+  async getVocabularyByLesson1(
+    level: string,
+    chapter: number,
+    lessonNumber: number
+  ): Promise<VocabularyItem[]> {
+    try {
+      const statusRef = ref(
+        this.database,
+        `vocabulary_data/${level}/${chapter}/lessonList/${lessonNumber}/vocabularyList`
+      );
+      const snapshot = await get(statusRef);
+
+      if (snapshot.exists()) {
+        return snapshot.val() as VocabularyItem[];
+      }
+      return [];
+    } catch (error) {
+      throw error;
+    }
+  }
 
   /**
    * Get vocabulary data for a specific level from Firebase Hosting
    */
   getVocabularyData(level: string): Observable<Chapter[]> {
     //console.log(`🔍 Getting vocabulary data for ${level}`);
-
-    // Check cache first
-    if (this.cache.has(level)) {
-      //console.log(`📖 Returning cached data for ${level}`);
-      const cachedData = this.cache.get(level)!;
-      //console.log(`📊 Cached data: ${cachedData.length} chapters`);
-      return of(cachedData);
-    }
 
     const fileName = `data${level}.json`;
     // URL từ Firebase Hosting
@@ -69,18 +97,9 @@ export class VocabularyService {
         timeout(30000), // 30 seconds timeout
         retry(1), // Retry 1 time only
         map((data) => {
-          //console.log(`📥 Raw data received: ${Array.isArray(data) ? data.length : 'not array'}`);
-          // Cache the data
-          this.cache.set(level, data);
-          //console.log(`📚 Loaded ${data.length} chapters for ${level} from Firebase Hosting`);
           return data;
         }),
         catchError((error) => {
-          //console.error(`❌ Failed to load vocabulary data for ${level}:`, error);
-          //console.error(`URL: ${filePath}`);
-          if (error.name === 'TimeoutError') {
-            //console.error(`⏰ Timeout loading ${level} - file too large`);
-          }
           return of([]);
         })
       );

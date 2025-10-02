@@ -143,15 +143,15 @@ export class FlashcardComponent implements OnInit, OnDestroy {
         this.updateStatistics();
         if (!this.lesson) return;
 
-        const userId = ensureAuthenticated(this.authService, this.router);
-        if (!userId) return;
-        const result = await this.databaseService.getVocabulariesByStatus(
-          userId,
-          this.lesson,
-          true
-        );
-        this.rememberedCards = result?.length;
-        this.notRememberedCards = this.totalCardsOfLesson - this.rememberedCards;
+        // const userId = ensureAuthenticated(this.authService, this.router);
+        // if (!userId) return;
+        // const result = await this.databaseService.getVocabulariesByStatus(
+        //   userId,
+        //   this.lesson,
+        //   true
+        // );
+        // this.rememberedCards = result?.length;
+        // this.notRememberedCards = this.totalCardsOfLesson - this.rememberedCards;
         this.isLoading = false;
         this.cdr.detectChanges();
       },
@@ -192,31 +192,31 @@ export class FlashcardComponent implements OnInit, OnDestroy {
     if (!this.lesson) return;
     this.isEnd = false;
 
-    const result = await this.databaseService.getVocabulariesByStatus(userId, this.lesson, status);
+    // const result = await this.databaseService.getVocabulariesByStatus(userId, this.lesson, status);
 
-    if (status) {
-      this.setFilterMode('remembered');
-      this.rememberedList = result.map((v) => v.vocabulary_id);
-      this.vocabularyList = this.lesson.vocabularyList.filter((v) =>
-        this.rememberedList.includes(v.vocabulary_id)
-      );
-      this.vocabularyList = this.shuffleVocabularyList(this.vocabularyList);
-      this.totalCardsCurrent = this.vocabularyList.length;
-      this.currentIndex = 0;
-      this.cdr.detectChanges();
-      //console.log('✅ Danh sách đã nhớ:', this.vocabularyList);
-    } else {
-      this.setFilterMode('notRemembered');
-      this.notRememberedList = result.map((v) => v.vocabulary_id);
-      this.vocabularyList = this.lesson.vocabularyList.filter((v) =>
-        this.notRememberedList.includes(v.vocabulary_id)
-      );
-      this.vocabularyList = this.shuffleVocabularyList(this.vocabularyList);
-      this.totalCardsCurrent = this.vocabularyList.length;
-      this.currentIndex = 0;
-      this.cdr.detectChanges();
-      //console.log('❌ Danh sách chưa nhớ:', this.vocabularyList);
-    }
+    // if (status) {
+    //   this.setFilterMode('remembered');
+    //   this.rememberedList = result.map((v) => v.vocabulary_id);
+    //   this.vocabularyList = this.lesson.vocabularyList.filter((v) =>
+    //     this.rememberedList.includes(v.vocabulary_id)
+    //   );
+    //   this.vocabularyList = this.shuffleVocabularyList(this.vocabularyList);
+    //   this.totalCardsCurrent = this.vocabularyList.length;
+    //   this.currentIndex = 0;
+    //   this.cdr.detectChanges();
+    //   //console.log('✅ Danh sách đã nhớ:', this.vocabularyList);
+    // } else {
+    //   this.setFilterMode('notRemembered');
+    //   this.notRememberedList = result.map((v) => v.vocabulary_id);
+    //   this.vocabularyList = this.lesson.vocabularyList.filter((v) =>
+    //     this.notRememberedList.includes(v.vocabulary_id)
+    //   );
+    //   this.vocabularyList = this.shuffleVocabularyList(this.vocabularyList);
+    //   this.totalCardsCurrent = this.vocabularyList.length;
+    //   this.currentIndex = 0;
+    //   this.cdr.detectChanges();
+    //   //console.log('❌ Danh sách chưa nhớ:', this.vocabularyList);
+    // }
 
     this.cdr.detectChanges();
   }
@@ -229,7 +229,7 @@ export class FlashcardComponent implements OnInit, OnDestroy {
     if (!currentVocab || !this.lesson) return;
     // Save to database
     this.databaseService
-      .saveVocabularyStatus(userId, this.lesson.lesson_id, currentVocab.vocabulary_id, true)
+      .saveVocabularyStatus(userId, this.lesson.lesson_id, currentVocab.vocabulary_id)
       .then(() => {
         this.userProgress[currentVocab.vocabulary_id] = true;
         this.updateStatistics();
@@ -251,7 +251,7 @@ export class FlashcardComponent implements OnInit, OnDestroy {
 
     // Save to database
     this.databaseService
-      .saveVocabularyStatus(userId, this.lesson.lesson_id, currentVocab.vocabulary_id, false)
+      .removeVocabularyStatus(userId, this.lesson.lesson_id, currentVocab.vocabulary_id)
       .then(() => {
         this.userProgress[currentVocab.vocabulary_id] = false;
         this.updateStatistics();

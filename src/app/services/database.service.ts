@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { ref, set, get, onValue, off } from '@angular/fire/database';
+import { ref, set, get, onValue, off, remove } from '@angular/fire/database';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { FirebaseService } from './firebase.service';
+import { VocabularyItem } from './vocabulary.service';
 
 export interface VocabularyStatus {
   [vocabularyId: number]: boolean; // true = remembered, false = not remembered
@@ -32,8 +33,7 @@ export class DatabaseService {
   async saveVocabularyStatus(
     userId: string,
     lessonId: number,
-    vocabularyId: number,
-    status: boolean
+    vocabularyId: number
   ): Promise<void> {
     try {
       if (!this.database) {
@@ -44,7 +44,25 @@ export class DatabaseService {
       const path = `vocabulary_status/${userId}/${lessonId}/${vocabularyId}`;
       const statusRef = ref(this.database, path);
 
-      await set(statusRef, status);
+      await set(statusRef, '');
+    } catch (error) {
+      throw error;
+    }
+  }
+  async removeVocabularyStatus(
+    userId: string,
+    lessonId: number,
+    vocabularyId: number
+  ): Promise<void> {
+    try {
+      if (!this.database) {
+        throw new Error('Database not initialized');
+      }
+
+      const path = `vocabulary_status/${userId}/${lessonId}/${vocabularyId}`;
+      const statusRef = ref(this.database, path);
+
+      await remove(statusRef);
     } catch (error) {
       throw error;
     }
@@ -70,30 +88,6 @@ export class DatabaseService {
   /**
    * Lấy danh sách vocabulary theo trạng thái (true = đã nhớ, false = chưa nhớ/chưa có trong DB)
    */
-  async getVocabulariesByStatus(
-    userId: string,
-    lesson: { lesson_id: number; vocabularyList: any[] },
-    status: boolean
-  ): Promise<any[]> {
-    try {
-      const vocabStatus = await this.getLessonVocabularyStatus(userId, lesson.lesson_id);
-
-      return lesson.vocabularyList.filter((vocab) => {
-        const currentStatus = vocabStatus[vocab.vocabulary_id];
-
-        if (status === true) {
-          // Đã nhớ
-          return currentStatus === true;
-        } else {
-          // Chưa nhớ = false hoặc chưa có trong DB
-          return currentStatus === false || currentStatus === undefined;
-        }
-      });
-    } catch (error) {
-      // console.error('❌ Lỗi khi lấy vocabularies theo trạng thái:', error);
-      return [];
-    }
-  }
 
   /**
    * Get all vocabulary status for a user

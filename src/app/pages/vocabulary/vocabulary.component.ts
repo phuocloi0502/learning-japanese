@@ -20,6 +20,7 @@ export class VocabularyComponent implements OnInit {
   selectedLevel = localStorage.getItem('selectedLevel') || 'N5';
   availableLevels: string[] = [];
   chapters: Chapter[] = [];
+  chapters1: Chapter[] = [];
   isLoading = false;
   error = '';
 
@@ -34,34 +35,28 @@ export class VocabularyComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Luôn scroll lên đầu trang khi vào component
     window.scrollTo({ top: 0, behavior: 'auto' });
     this.availableLevels = this.vocabularyService.getAvailableLevels();
     this.loadVocabularyData();
   }
 
-  loadVocabularyData() {
-    //console.log(`🔄 Starting to load vocabulary data for ${this.selectedLevel}`);
+  async loadVocabularyData() {
     this.isLoading = true;
     this.error = '';
-    this.chapters = []; // Clear previous data
-
-    this.vocabularyService.getVocabularyData(this.selectedLevel).subscribe({
-      next: (data) => {
-        // console.log(`✅ Data received for ${this.selectedLevel}:`, data);
-        this.chapters = data;
-        //console.log(`📚 Set chapters: ${this.chapters.length} chapters for ${this.selectedLevel}`);
-        // Trong loadVocabularyData, sau khi this.chapters = data;
-        this.loadRememberedCounts();
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        // console.error(`❌ Error loading vocabulary for ${this.selectedLevel}:`, error);
-        this.error = 'Không thể tải dữ liệu từ vựng. Vui lòng thử lại.';
-        this.isLoading = false;
-      },
-    });
+    this.chapters = [];
+    try {
+      this.chapters = await this.vocabularyService.getVocabularyData1(this.selectedLevel);
+      console.log('📚 Loaded chapters from Firebase Realtime Database:', this.chapters);
+      await this.loadRememberedCounts();
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    } catch (error) {
+      this.error = 'Không thể tải dữ liệu từ vựng. Vui lòng thử lại.';
+      this.isLoading = false;
+    } finally {
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    }
   }
 
   onLevelChange() {
@@ -73,16 +68,27 @@ export class VocabularyComponent implements OnInit {
     if (!userId) return;
 
     const promises: Promise<void>[] = [];
+
     for (const chapter of this.chapters) {
+      if (!chapter.lessonList) continue; // tránh lỗi null
+
       for (const lesson of chapter.lessonList) {
-        const p = this.databaseService
-          .getVocabulariesByStatus(userId, lesson, true)
-          .then((result) => {
-            this.rememberedCountMap[lesson.lesson_id] = result?.length || 0;
-          });
-        promises.push(p);
+        if (!lesson?.lesson_id) continue;
+
+        // const p = this.databaseService
+        //   .getVocabulariesByStatus(userId, lesson, true)
+        //   .then((result) => {
+        //     this.rememberedCountMap[lesson.lesson_id] = result?.length || 0;
+        //   })
+        //   .catch((err) => {
+        //     console.error(`❌ Lỗi khi lấy vocab cho lesson ${lesson.lesson_id}`, err);
+        //     this.rememberedCountMap[lesson.lesson_id] = 0;
+        //   });
+
+        // promises.push(p);
       }
     }
+
     await Promise.all(promises);
     this.cdr.detectChanges();
   }

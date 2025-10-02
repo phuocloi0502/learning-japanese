@@ -124,12 +124,6 @@ export class QuizletComponent implements OnInit, OnDestroy {
 
         const userId = ensureAuthenticated(this.authService, this.router);
         if (!userId) return;
-        const result = await this.databaseService.getVocabulariesByStatus(
-          userId,
-          this.lesson,
-          true
-        );
-
         this.isLoading = false;
         this.cdr.detectChanges();
       },

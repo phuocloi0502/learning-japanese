@@ -84,78 +84,34 @@ export class VocabularyDetailComponent implements OnInit {
     this.isLoading = true;
     this.error = '';
     this.vocabularyList = [];
+    try {
+      this.vocabularyList = await this.vocabularyService.getVocabularyByLesson1(
+        this.level,
+        this.chapterNumber - 1,
+        this.lessonNumber - 1
+      );
+      console.log('📚 Loaded vocabulary list:', this.vocabularyList);
 
-    this.vocabularyService.getVocabularyData(this.level).subscribe({
-      next: async (chapters: Chapter[]) => {
-        //console.log(`✅ Data received for ${this.level}:`, chapters);
+      this.allChapters = await this.vocabularyService.getVocabularyData1(this.level);
+      this.isLoading = false;
+      this.fullAudio = `https://cloud.jtest.net/tango/sound/${this.level.toLowerCase()}/section/Chapter${
+        this.chapterNumber
+      }Section${this.lessonNumber}.mp3`;
+      const userId = this.authService.getUserId();
 
-        // Find the specific chapter
-        this.chapter = chapters.find((c) => c.chapter_number === this.chapterNumber) || null;
-
-        if (!this.chapter) {
-          this.error = `Không tìm thấy chương ${this.chapterNumber} trong cấp độ ${this.level}`;
-          this.isLoading = false;
-          return;
-        }
-
-        // Find the specific lesson
-        this.lesson =
-          this.chapter.lessonList.find((l) => l.lesson_number === this.lessonNumber) || null;
-
-        if (!this.lesson) {
-          this.error = `Không tìm thấy bài ${this.lessonNumber} trong chương ${this.chapterNumber}`;
-          this.isLoading = false;
-          return;
-        }
-
-        this.vocabularyList = this.lesson.vocabularyList;
-        this.allChapters = chapters; // Store all chapters for sidebar
-        //console.log(`📚 Loaded ${this.vocabularyList.length} vocabulary items`);
-        this.isLoading = false;
-        this.fullAudio = `https://cloud.jtest.net/tango/sound/${this.level.toLowerCase()}/section/Chapter${
-          this.chapterNumber
-        }Section${this.lessonNumber}.mp3`;
-
-        // if (!this.isAuthenticated) {
-        //   // this.router.navigate(['/login']);
-        //   return;
-        // }
-
-        if (!this.lesson) return;
-
-        const userId = this.authService.getUserId();
-
-        if (!userId) return;
-        const result = await this.databaseService.getVocabulariesByStatus(
-          userId,
-          this.lesson,
-          true
-        );
-        this.remembered = result?.length;
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        //console.error(`❌ Error loading vocabulary detail:`, error);
-        this.error = 'Không thể tải dữ liệu từ vựng. Vui lòng thử lại.';
-        this.isLoading = false;
-      },
-    });
+      // if (!userId) return;
+      // const result = await this.databaseService.getVocabulariesByStatus(userId, this.lessonNumber);
+      // this.remembered = result?.length || 0;
+      this.cdr.detectChanges();
+    } catch (error) {
+      this.error = 'Không thể tải dữ liệu từ vựng. Vui lòng thử lại.';
+    }
   }
 
   playFullAudio() {
     if (!this.fullAudio) return;
 
     const audioId = 'audio_full';
-
-    // // Nếu đang play fullAudio → pause/resume
-    // if (this.currentPlayingId === audioId && this.currentAudio) {
-    //   if (this.currentAudio.paused) {
-    //     this.currentAudio.play().catch(err => console.error('Error resume full audio:', err));
-    //   } else {
-    //     this.currentAudio.pause();
-    //   }
-    //   return;
-    // }
 
     // Ngừng audio hiện tại (bao gồm cả audio từ vựng riêng)
     if (this.currentAudio) {

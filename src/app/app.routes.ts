@@ -6,7 +6,6 @@ import { FlashcardComponent } from './pages/flashcard/flashcard.component';
 import { LoginComponent } from './pages/login/login.component';
 import { GrammarComponent } from './pages/grammar/grammar.component';
 import { KanjiComponent } from './pages/kanji/kanji.component';
-import { TestComponent } from './pages/test/test.component';
 import { QuizletComponent } from './pages/quizlet/quizlet.component';
 
 export const routes: Routes = [
@@ -19,6 +18,5 @@ export const routes: Routes = [
   { path: 'quizlet/:level/:chapter/:lesson', component: QuizletComponent },
   { path: 'grammar', component: GrammarComponent },
   { path: 'kanji', component: KanjiComponent },
-  { path: 'test', component: TestComponent },
   { path: '**', redirectTo: '/home' },
 ];
