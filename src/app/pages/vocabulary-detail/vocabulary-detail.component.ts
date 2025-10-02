@@ -55,8 +55,6 @@ export class VocabularyDetailComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Luôn scroll lên đầu trang khi vào component
-    window.scrollTo({ top: 0, behavior: 'auto' });
     this.route.params.subscribe((params) => {
       this.level = params['level'];
       this.chapterNumber = +params['chapter'];
@@ -230,6 +228,8 @@ export class VocabularyDetailComponent implements OnInit {
     // Create new audio and play
     this.currentAudio = new Audio(soundUrl);
     this.currentPlayingId = audioId;
+
+    // Reset audio to beginning
     this.currentAudio.currentTime = 0;
 
     // Play the audio
@@ -237,23 +237,20 @@ export class VocabularyDetailComponent implements OnInit {
       console.error('Error playing audio:', error);
       this.currentAudio = null;
       this.currentPlayingId = null;
-      this.cdr.detectChanges();
     });
 
     // Handle audio end
-    this.currentAudio.onended = () => {
+    this.currentAudio.addEventListener('ended', () => {
       this.currentAudio = null;
       this.currentPlayingId = null;
-      this.cdr.detectChanges(); // Cập nhật lại UI để getAudioButtonText đổi trạng thái
-    };
+    });
 
     // Handle audio error
-    this.currentAudio.onerror = () => {
+    this.currentAudio.addEventListener('error', () => {
       console.error('Audio error for:', soundUrl);
       this.currentAudio = null;
       this.currentPlayingId = null;
-      this.cdr.detectChanges();
-    };
+    });
   }
 
   isAudioPlaying(vocabularyId: number): boolean {

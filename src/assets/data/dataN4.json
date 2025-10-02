@@ -648,7 +648,7 @@
             "vocabulary_id": 1113,
             "kanji": "うつす",
             "furigana": "うつす",
-            "meaning": "Được chuyển sang",
+            "meaning": "Chuyển sang",
             "example": "となりの部屋（へや）にテーブルをうつしました。",
             "example_meaning": "Tôi đã chuyển cái bàn sang phòng bên cạnh.",
             "sound_url": "https://cloud.jtest.net/tango/sound/n4/word/0063.mp3"
@@ -758,7 +758,7 @@
             "vocabulary_id": 1124,
             "kanji": "（かぎが）かかる",
             "furigana": "（かぎが）かかる",
-            "meaning": "(Cửa) khóa",
+            "meaning": "(Cửa) được khóa",
             "example": "げんかんのドアはかぎがかかっています。",
             "example_meaning": "Cửa ở lối vào nhà đã được khóa.",
             "sound_url": "https://cloud.jtest.net/tango/sound/n4/word/0074.mp3"

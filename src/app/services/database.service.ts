@@ -16,7 +16,7 @@ export interface UserVocabularyData {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DatabaseService {
   private database: any;
@@ -30,9 +30,9 @@ export class DatabaseService {
    * Structure: vocabulary_status/[user_id]/lesson_id/vocabulary_id/{status: true/false}
    */
   async saveVocabularyStatus(
-    userId: string, 
-    lessonId: number, 
-    vocabularyId: number, 
+    userId: string,
+    lessonId: number,
+    vocabularyId: number,
     status: boolean
   ): Promise<void> {
     try {
@@ -40,20 +40,22 @@ export class DatabaseService {
         console.error('Database not initialized');
         throw new Error('Database not initialized');
       }
-      
+
       const path = `vocabulary_status/${userId}/${lessonId}/${vocabularyId}`;
       const statusRef = ref(this.database, path);
-      
+
       console.log(`🔄 Saving vocabulary status:`, {
         path,
         userId,
         lessonId,
         vocabularyId,
-        status
+        status,
       });
-      
+
       await set(statusRef, status);
-      console.log(`✅ Successfully saved vocabulary status: ${vocabularyId} = ${status} for user ${userId}`);
+      console.log(
+        `✅ Successfully saved vocabulary status: ${vocabularyId} = ${status} for user ${userId}`
+      );
     } catch (error) {
       console.error('❌ Error saving vocabulary status:', error);
       throw error;
@@ -67,7 +69,7 @@ export class DatabaseService {
     try {
       const statusRef = ref(this.database, `vocabulary_status/${userId}/${lessonId}`);
       const snapshot = await get(statusRef);
-      
+
       if (snapshot.exists()) {
         return snapshot.val() as VocabularyStatus;
       }
@@ -77,33 +79,33 @@ export class DatabaseService {
       throw error;
     }
   }
-/**
- * Lấy danh sách vocabulary theo trạng thái (true = đã nhớ, false = chưa nhớ/chưa có trong DB)
- */
-async getVocabulariesByStatus(
-  userId: string,
-  lesson: { lesson_id: number; vocabularyList: any[] },
-  status: boolean
-): Promise<any[]> {
-  try {
-    const vocabStatus = await this.getLessonVocabularyStatus(userId, lesson.lesson_id);
+  /**
+   * Lấy danh sách vocabulary theo trạng thái (true = đã nhớ, false = chưa nhớ/chưa có trong DB)
+   */
+  async getVocabulariesByStatus(
+    userId: string,
+    lesson: { lesson_id: number; vocabularyList: any[] },
+    status: boolean
+  ): Promise<any[]> {
+    try {
+      const vocabStatus = await this.getLessonVocabularyStatus(userId, lesson.lesson_id);
 
-    return lesson.vocabularyList.filter(vocab => {
-      const currentStatus = vocabStatus[vocab.vocabulary_id];
+      return lesson.vocabularyList.filter((vocab) => {
+        const currentStatus = vocabStatus[vocab.vocabulary_id];
 
-      if (status === true) {
-        // Đã nhớ
-        return currentStatus === true;
-      } else {
-        // Chưa nhớ = false hoặc chưa có trong DB
-        return currentStatus === false || currentStatus === undefined;
-      }
-    });
-  } catch (error) {
-    console.error('❌ Lỗi khi lấy vocabularies theo trạng thái:', error);
-    return [];
+        if (status === true) {
+          // Đã nhớ
+          return currentStatus === true;
+        } else {
+          // Chưa nhớ = false hoặc chưa có trong DB
+          return currentStatus === false || currentStatus === undefined;
+        }
+      });
+    } catch (error) {
+      console.error('❌ Lỗi khi lấy vocabularies theo trạng thái:', error);
+      return [];
+    }
   }
-}
 
   /**
    * Get all vocabulary status for a user
@@ -112,7 +114,7 @@ async getVocabulariesByStatus(
     try {
       const statusRef = ref(this.database, `vocabulary_status/${userId}`);
       const snapshot = await get(statusRef);
-      
+
       if (snapshot.exists()) {
         return snapshot.val() as UserVocabularyData;
       }
@@ -122,7 +124,7 @@ async getVocabulariesByStatus(
       throw error;
     }
   }
-    /**
+  /**
    * Get  vocabulary status by vocabularyId for a user
    */
   async getStatusVocById(
@@ -194,7 +196,7 @@ async getVocabulariesByStatus(
   }> {
     try {
       const userData = await this.getUserVocabularyStatus(userId);
-      
+
       let totalVocabulary = 0;
       let rememberedVocabulary = 0;
       let notRememberedVocabulary = 0;
@@ -211,13 +213,14 @@ async getVocabulariesByStatus(
         }
       }
 
-      const progressPercentage = totalVocabulary > 0 ? (rememberedVocabulary / totalVocabulary) * 100 : 0;
+      const progressPercentage =
+        totalVocabulary > 0 ? (rememberedVocabulary / totalVocabulary) * 100 : 0;
 
       return {
         totalVocabulary,
         rememberedVocabulary,
         notRememberedVocabulary,
-        progressPercentage: Math.round(progressPercentage * 100) / 100
+        progressPercentage: Math.round(progressPercentage * 100) / 100,
       };
     } catch (error) {
       console.error('Error getting user statistics:', error);
@@ -236,7 +239,11 @@ async getVocabulariesByStatus(
   /**
    * Lấy danh sách vocabularyId có trạng thái == status (true/false)
    */
-  async getRememberedVocabulary(userId: string, lessonId: number | string, status: boolean): Promise<string[]> {
+  async getRememberedVocabulary(
+    userId: string,
+    lessonId: number | string,
+    status: boolean
+  ): Promise<string[]> {
     const path = `vocabulary_status/${userId}/${lessonId}`;
     const statusRef = ref(this.database, path);
 

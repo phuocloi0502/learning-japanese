@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
-import { 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  signOut, 
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
   onAuthStateChanged,
-  User
+  User,
 } from '@angular/fire/auth';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { FirebaseService } from './firebase.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private userSubject = new BehaviorSubject<User | null>(null);
@@ -19,12 +19,12 @@ export class AuthService {
 
   constructor(private firebaseService: FirebaseService) {
     this.auth = this.firebaseService.getAuth();
-    
+
     // Listen to auth state changes
     if (this.auth) {
       onAuthStateChanged(this.auth, (user: User | null) => {
         this.userSubject.next(user);
-        console.log('Auth state changed:', user ? user.email : 'No user');
+        //console.log('Auth state changed:', user ? user.email : 'No user');
       });
     }
   }
@@ -35,10 +35,10 @@ export class AuthService {
   async signIn(email: string, password: string): Promise<User> {
     try {
       const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
-      console.log('User signed in:', userCredential.user.email);
+      //console.log('User signed in:', userCredential.user.email);
       return userCredential.user;
     } catch (error) {
-      console.error('Sign in error:', error);
+      //console.error('Sign in error:', error);
       throw error;
     }
   }
@@ -49,10 +49,10 @@ export class AuthService {
   async signUp(email: string, password: string): Promise<User> {
     try {
       const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
-      console.log('User signed up:', userCredential.user.email);
+      //console.log('User signed up:', userCredential.user.email);
       return userCredential.user;
     } catch (error) {
-      console.error('Sign up error:', error);
+      //console.error('Sign up error:', error);
       throw error;
     }
   }
@@ -63,9 +63,9 @@ export class AuthService {
   async signOut(): Promise<void> {
     try {
       await signOut(this.auth);
-      console.log('User signed out');
+      //console.log('User signed out');
     } catch (error) {
-      console.error('Sign out error:', error);
+      //console.error('Sign out error:', error);
       throw error;
     }
   }

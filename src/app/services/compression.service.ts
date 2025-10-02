@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CompressionService {
-
-  constructor() { }
+  constructor() {}
 
   /**
    * Compress JSON data using LZ-string algorithm (simplified)
@@ -16,7 +15,7 @@ export class CompressionService {
       // Simple compression by removing unnecessary whitespace
       return jsonString.replace(/\s+/g, ' ').trim();
     } catch (error) {
-      console.error('Compression error:', error);
+      //console.error('Compression error:', error);
       return JSON.stringify(data);
     }
   }
@@ -28,7 +27,7 @@ export class CompressionService {
     try {
       return JSON.parse(compressedData);
     } catch (error) {
-      console.error('Decompression error:', error);
+      //console.error('Decompression error:', error);
       return null;
     }
   }

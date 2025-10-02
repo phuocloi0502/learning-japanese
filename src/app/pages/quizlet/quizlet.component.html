@@ -88,9 +88,9 @@
                 'bg-opacity-25 bg-danger rounded-4': isWrongAnswer(qIndex)
               }"
             >
-              <p class="card-text fs-5 fw-bold text-dark mb-4">
+              <div class="card-text fs-5 fw-bold text-dark mb-4">
                 Câu {{ qIndex + 1 }}: {{ item.kanji }}
-              </p>
+              </div>
 
               <div class="ms-0 d-grid gap-2 mb-4 ms-4">
                 <div
@@ -102,6 +102,7 @@
                     type="radio"
                     name="answer-group-{{ qIndex }}"
                     id="answer-{{ qIndex }}-{{ optIndex }}"
+                    [disabled]="showCorrectAnswers"
                     [value]="optIndex"
                     (change)="onAnswerSelected(qIndex, optIndex)"
                     [checked]="userAnswers[qIndex] === optIndex"

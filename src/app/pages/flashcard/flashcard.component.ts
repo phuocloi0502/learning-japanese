@@ -12,7 +12,6 @@ import {
 import { AuthService } from '../../services/auth.service';
 import { DatabaseService } from '../../services/database.service';
 import { RubyPipe } from '../../common/pipes/ruby-pipe';
-import { log } from 'console';
 import { ensureAuthenticated } from '../../common/utils/helpers';
 
 @Component({
@@ -157,7 +156,7 @@ export class FlashcardComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (error) => {
-        console.error('Error loading lesson data:', error);
+        //console.error('Error loading lesson data:', error);
         this.error = 'Không thể tải dữ liệu bài học';
         this.isLoading = false;
       },
@@ -178,7 +177,7 @@ export class FlashcardComponent implements OnInit, OnDestroy {
         this.updateStatistics();
       })
       .catch((error) => {
-        console.error('Error loading user progress:', error);
+        //console.error('Error loading user progress:', error);
       });
   }
 
@@ -205,7 +204,7 @@ export class FlashcardComponent implements OnInit, OnDestroy {
       this.totalCardsCurrent = this.vocabularyList.length;
       this.currentIndex = 0;
       this.cdr.detectChanges();
-      console.log('✅ Danh sách đã nhớ:', this.vocabularyList);
+      //console.log('✅ Danh sách đã nhớ:', this.vocabularyList);
     } else {
       this.setFilterMode('notRemembered');
       this.notRememberedList = result.map((v) => v.vocabulary_id);
@@ -216,7 +215,7 @@ export class FlashcardComponent implements OnInit, OnDestroy {
       this.totalCardsCurrent = this.vocabularyList.length;
       this.currentIndex = 0;
       this.cdr.detectChanges();
-      console.log('❌ Danh sách chưa nhớ:', this.vocabularyList);
+      //console.log('❌ Danh sách chưa nhớ:', this.vocabularyList);
     }
 
     this.cdr.detectChanges();
@@ -236,10 +235,10 @@ export class FlashcardComponent implements OnInit, OnDestroy {
         this.updateStatistics();
         this.nextCard();
         this.cdr.detectChanges();
-        console.log(this.currentIndex);
+        //console.log(this.currentIndex);
       })
       .catch((error) => {
-        console.error('Error saving vocabulary status:', error);
+        //console.error('Error saving vocabulary status:', error);
       });
   }
 
@@ -260,7 +259,7 @@ export class FlashcardComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       })
       .catch((error) => {
-        console.error('Error saving vocabulary status:', error);
+        //console.error('Error saving vocabulary status:', error);
       });
   }
 
@@ -365,7 +364,7 @@ export class FlashcardComponent implements OnInit, OnDestroy {
     if (this.currentPlayingId === audioId && this.currentAudio) {
       if (this.currentAudio.paused) {
         this.currentAudio.play().catch((error) => {
-          console.error('Error resuming audio:', error);
+          //console.error('Error resuming audio:', error);
         });
       } else {
         this.currentAudio.pause();
@@ -386,7 +385,7 @@ export class FlashcardComponent implements OnInit, OnDestroy {
 
     // Play the audio
     this.currentAudio.play().catch((error) => {
-      console.error('Error playing audio:', error);
+      //console.error('Error playing audio:', error);
       this.currentAudio = null;
       this.currentPlayingId = null;
       this.cdr.detectChanges();
@@ -401,7 +400,7 @@ export class FlashcardComponent implements OnInit, OnDestroy {
 
     // Handle audio error
     this.currentAudio.onerror = () => {
-      console.error('Audio error for:', soundUrl);
+      //console.error('Audio error for:', soundUrl);
       this.currentAudio = null;
       this.currentPlayingId = null;
       this.cdr.detectChanges();

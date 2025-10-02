@@ -17,7 +17,7 @@ export class VocabularyComponent implements OnInit {
   title = 'Từ Vựng';
   description = 'Học từ vựng tiếng Nhật theo chủ đề';
 
-  selectedLevel = 'N5';
+  selectedLevel = localStorage.getItem('selectedLevel') || 'N5';
   availableLevels: string[] = [];
   chapters: Chapter[] = [];
   isLoading = false;
@@ -65,6 +65,7 @@ export class VocabularyComponent implements OnInit {
   }
 
   onLevelChange() {
+    localStorage.setItem('selectedLevel', this.selectedLevel);
     this.loadVocabularyData();
   }
   async loadRememberedCounts() {

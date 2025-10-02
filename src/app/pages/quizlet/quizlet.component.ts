@@ -11,8 +11,6 @@ import {
 } from '../../services/vocabulary.service';
 import { AuthService } from '../../services/auth.service';
 import { DatabaseService } from '../../services/database.service';
-import { RubyPipe } from '../../common/pipes/ruby-pipe';
-import { log } from 'console';
 import { ensureAuthenticated } from '../../common/utils/helpers';
 export interface AnswerOption {
   text: string;
@@ -24,7 +22,7 @@ export interface VocabularyItemWithOptions extends VocabularyItem {
 @Component({
   selector: 'app-quizlet',
   standalone: true,
-  imports: [CommonModule, FormsModule, RubyPipe],
+  imports: [CommonModule, FormsModule],
   templateUrl: './quizlet.component.html',
   styleUrls: ['./quizlet.component.css'],
 })
@@ -113,12 +111,13 @@ export class QuizletComponent implements OnInit, OnDestroy {
           this.isLoading = false;
           return;
         }
-        console.log('Lesson found:', this.lesson.vocabularyList);
+        //console.log('Lesson found:', this.lesson.vocabularyList);
         // this.createAnswerOptions(this.lesson.vocabularyList);
         this.vocabularyList = this.lesson.vocabularyList.map((item) => ({
           ...item,
           options: this.createAnswerOptions(item),
         }));
+        this.vocabularyList = this.shuffleVocabularyList(this.vocabularyList);
         //this.vocabularyList = this.shuffleVocabularyList(this.lesson.vocabularyList);
 
         if (!this.lesson) return;
@@ -135,7 +134,7 @@ export class QuizletComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (error) => {
-        console.error('Error loading lesson data:', error);
+        //console.error('Error loading lesson data:', error);
         this.error = 'Không thể tải dữ liệu bài học';
         this.isLoading = false;
       },
@@ -152,9 +151,9 @@ export class QuizletComponent implements OnInit, OnDestroy {
 
   onAnswerSelected(questionIndex: number, optionIndex: number) {
     this.userAnswers[questionIndex] = optionIndex;
-    // Bạn có thể console.log để kiểm tra:
-    console.log(`Câu ${questionIndex} chọn đáp án ${optionIndex}`);
-    console.log('Tất cả đáp án:', this.userAnswers);
+    // Bạn có thể //console.log để kiểm tra:
+    //console.log(`Câu ${questionIndex} chọn đáp án ${optionIndex}`);
+    //console.log('Tất cả đáp án:', this.userAnswers);
   }
   getCorrectAnswers(): { [questionIndex: number]: number } {
     const correctAnswers: { [questionIndex: number]: number } = {};
@@ -181,6 +180,7 @@ export class QuizletComponent implements OnInit, OnDestroy {
 
   checkAnswer(): number {
     window.scrollTo({ top: 0, behavior: 'auto' });
+
     this.showCorrectAnswers = true;
     this.notCorrectAnswers = [];
     const correctAnswers = this.getCorrectAnswers();
@@ -192,8 +192,8 @@ export class QuizletComponent implements OnInit, OnDestroy {
         this.notCorrectAnswers.push(+questionIndex);
       }
     }
-    console.log('Câu sai:', this.notCorrectAnswers);
-    console.log(`Điểm của bạn: ${score}/${this.vocabularyList.length}`);
+    //console.log('Câu sai:', this.notCorrectAnswers);
+    //console.log(`Điểm của bạn: ${score}/${this.vocabularyList.length}`);
     return score;
   }
   isWrongAnswer(index: number): boolean {
@@ -219,13 +219,12 @@ export class QuizletComponent implements OnInit, OnDestroy {
     }
     return arr;
   }
-
-  @HostListener('window:keydown', ['$event'])
-  handleKeyboardEvent(event: KeyboardEvent) {
-    if (event.key === 'ArrowRight') {
-    } else if (event.key === 'ArrowLeft') {
-    } else if (event.key === ' ') {
-      event.preventDefault(); // ngăn chặn cuộn trang khi nhấn Space
+  shuffleVocabularyList(list: VocabularyItemWithOptions[]): VocabularyItemWithOptions[] {
+    const arr = [...list];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
     }
+    return arr;
   }
 }

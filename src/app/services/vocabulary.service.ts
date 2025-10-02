@@ -36,27 +36,27 @@ export class VocabularyService {
   private cache: Map<string, Chapter[]> = new Map();
 
   constructor(private http: HttpClient) {
-    console.log('📚 Vocabulary Service initialized with static files');
+    //console.log('📚 Vocabulary Service initialized with static files');
   }
 
   /**
    * Get vocabulary data for a specific level from Firebase Hosting
    */
   getVocabularyData(level: string): Observable<Chapter[]> {
-    console.log(`🔍 Getting vocabulary data for ${level}`);
+    //console.log(`🔍 Getting vocabulary data for ${level}`);
 
     // Check cache first
     if (this.cache.has(level)) {
-      console.log(`📖 Returning cached data for ${level}`);
+      //console.log(`📖 Returning cached data for ${level}`);
       const cachedData = this.cache.get(level)!;
-      console.log(`📊 Cached data: ${cachedData.length} chapters`);
+      //console.log(`📊 Cached data: ${cachedData.length} chapters`);
       return of(cachedData);
     }
 
     const fileName = `data${level}.json`;
     // URL từ Firebase Hosting
     const filePath = `${environment.dataBaseUrl}${fileName}`;
-    console.log(`🌐 Loading from URL: ${filePath}`);
+    //console.log(`🌐 Loading from URL: ${filePath}`);
 
     return this.http
       .get<Chapter[]>(filePath, {
@@ -69,17 +69,17 @@ export class VocabularyService {
         timeout(30000), // 30 seconds timeout
         retry(1), // Retry 1 time only
         map((data) => {
-          console.log(`📥 Raw data received: ${Array.isArray(data) ? data.length : 'not array'}`);
+          //console.log(`📥 Raw data received: ${Array.isArray(data) ? data.length : 'not array'}`);
           // Cache the data
           this.cache.set(level, data);
-          console.log(`📚 Loaded ${data.length} chapters for ${level} from Firebase Hosting`);
+          //console.log(`📚 Loaded ${data.length} chapters for ${level} from Firebase Hosting`);
           return data;
         }),
         catchError((error) => {
-          console.error(`❌ Failed to load vocabulary data for ${level}:`, error);
-          console.error(`URL: ${filePath}`);
+          //console.error(`❌ Failed to load vocabulary data for ${level}:`, error);
+          //console.error(`URL: ${filePath}`);
           if (error.name === 'TimeoutError') {
-            console.error(`⏰ Timeout loading ${level} - file too large`);
+            //console.error(`⏰ Timeout loading ${level} - file too large`);
           }
           return of([]);
         })
@@ -106,14 +106,14 @@ export class VocabularyService {
         const chapter = data.find((c) => c.chapter_number === chapterNumber);
 
         if (!chapter) {
-          console.warn(`Chapter ${chapterNumber} not found in ${level}`);
+          //console.warn(`Chapter ${chapterNumber} not found in ${level}`);
           return [];
         }
 
         const lesson = chapter.lessonList.find((l) => l.lesson_number === lessonNumber);
 
         if (!lesson) {
-          console.warn(`Lesson ${lessonNumber} not found in chapter ${chapterNumber}`);
+          //console.warn(`Lesson ${lessonNumber} not found in chapter ${chapterNumber}`);
           return [];
         }
 
@@ -161,7 +161,7 @@ export class VocabularyService {
           return results;
         }),
         catchError((error) => {
-          console.error(`Error searching in ${level}:`, error);
+          //console.error(`Error searching in ${level}:`, error);
           return of([]);
         })
       )
@@ -227,7 +227,7 @@ export class VocabularyService {
    */
   clearCache(): void {
     this.cache.clear();
-    console.log('🗑️ Vocabulary cache cleared');
+    //console.log('🗑️ Vocabulary cache cleared');
   }
 
   /**
@@ -235,6 +235,6 @@ export class VocabularyService {
    */
   clearCacheForLevel(level: string): void {
     this.cache.delete(level);
-    console.log(`🗑️ Vocabulary cache cleared for ${level}`);
+    //console.log(`🗑️ Vocabulary cache cleared for ${level}`);
   }
 }

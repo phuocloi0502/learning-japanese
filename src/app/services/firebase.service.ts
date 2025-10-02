@@ -6,7 +6,7 @@ import { getDatabase } from 'firebase/database';
 import { environment } from '../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FirebaseService {
   private app: any;
@@ -22,17 +22,17 @@ export class FirebaseService {
     try {
       // Initialize Firebase
       this.app = initializeApp(environment.firebase);
-      
+
       // Initialize services (only in browser)
       if (typeof window !== 'undefined') {
         this.analytics = getAnalytics(this.app);
         this.auth = getAuth(this.app);
         this.database = getDatabase(this.app);
       }
-      
-      console.log('🔥 Firebase initialized successfully');
+
+      ////console.log('🔥 Firebase initialized successfully');
     } catch (error) {
-      console.error('❌ Firebase initialization failed:', error);
+      ////console.error('❌ Firebase initialization failed:', error);
     }
   }
 

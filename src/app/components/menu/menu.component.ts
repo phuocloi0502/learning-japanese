@@ -51,7 +51,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     try {
       await this.authService.signOut();
     } catch (error) {
-      console.error('Logout error:', error);
+      ////console.error('Logout error:', error);
     }
   }
 

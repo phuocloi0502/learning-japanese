@@ -9,7 +9,7 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrl: './login.component.css',
 })
 export class LoginComponent implements OnInit {
   email = '';
@@ -20,14 +20,11 @@ export class LoginComponent implements OnInit {
   error = '';
   success = '';
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
     // Check if user is already logged in
-    this.authService.user$.subscribe(user => {
+    this.authService.user$.subscribe((user) => {
       if (user) {
         this.router.navigate(['/home']);
       }
@@ -78,8 +75,8 @@ export class LoginComponent implements OnInit {
         }, 1500);
       }
     } catch (error: any) {
-      console.error('Auth error:', error);
-      
+      //console.error('Auth error:', error);
+
       // Handle specific Firebase auth errors
       switch (error.code) {
         case 'auth/user-not-found':

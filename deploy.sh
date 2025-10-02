@@ -18,7 +18,7 @@ if [ $? -eq 0 ]; then
         echo "🌐 Your app is now live at: https://jp-learning-angular.web.app"
     else
         echo "❌ Deployment failed!"
-        echo "Please check Firebase Console and create project 'jp-learning-angular' first"
+        echo "Please check Firebase //console and create project 'jp-learning-angular' first"
     fi
 else
     echo "❌ Build failed!"
