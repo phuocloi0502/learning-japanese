@@ -41,23 +41,23 @@ export class VocabularyComponent implements OnInit {
   }
 
   loadVocabularyData() {
-    console.log(`🔄 Starting to load vocabulary data for ${this.selectedLevel}`);
+    //console.log(`🔄 Starting to load vocabulary data for ${this.selectedLevel}`);
     this.isLoading = true;
     this.error = '';
     this.chapters = []; // Clear previous data
 
     this.vocabularyService.getVocabularyData(this.selectedLevel).subscribe({
       next: (data) => {
-        console.log(`✅ Data received for ${this.selectedLevel}:`, data);
+        // console.log(`✅ Data received for ${this.selectedLevel}:`, data);
         this.chapters = data;
-        console.log(`📚 Set chapters: ${this.chapters.length} chapters for ${this.selectedLevel}`);
+        //console.log(`📚 Set chapters: ${this.chapters.length} chapters for ${this.selectedLevel}`);
         // Trong loadVocabularyData, sau khi this.chapters = data;
         this.loadRememberedCounts();
         this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: (error) => {
-        console.error(`❌ Error loading vocabulary for ${this.selectedLevel}:`, error);
+        // console.error(`❌ Error loading vocabulary for ${this.selectedLevel}:`, error);
         this.error = 'Không thể tải dữ liệu từ vựng. Vui lòng thử lại.';
         this.isLoading = false;
       },

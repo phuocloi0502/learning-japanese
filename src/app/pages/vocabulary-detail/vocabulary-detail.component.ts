@@ -81,17 +81,13 @@ export class VocabularyDetailComponent implements OnInit {
   }
 
   async loadVocabularyDetail() {
-    console.log(
-      `🔄 Loading vocabulary detail for ${this.level} - Chapter ${this.chapterNumber} - Lesson ${this.lessonNumber}`
-    );
-
     this.isLoading = true;
     this.error = '';
     this.vocabularyList = [];
 
     this.vocabularyService.getVocabularyData(this.level).subscribe({
       next: async (chapters: Chapter[]) => {
-        console.log(`✅ Data received for ${this.level}:`, chapters);
+        //console.log(`✅ Data received for ${this.level}:`, chapters);
 
         // Find the specific chapter
         this.chapter = chapters.find((c) => c.chapter_number === this.chapterNumber) || null;
@@ -114,7 +110,7 @@ export class VocabularyDetailComponent implements OnInit {
 
         this.vocabularyList = this.lesson.vocabularyList;
         this.allChapters = chapters; // Store all chapters for sidebar
-        console.log(`📚 Loaded ${this.vocabularyList.length} vocabulary items`);
+        //console.log(`📚 Loaded ${this.vocabularyList.length} vocabulary items`);
         this.isLoading = false;
         this.fullAudio = `https://cloud.jtest.net/tango/sound/${this.level.toLowerCase()}/section/Chapter${
           this.chapterNumber
@@ -139,7 +135,7 @@ export class VocabularyDetailComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (error) => {
-        console.error(`❌ Error loading vocabulary detail:`, error);
+        //console.error(`❌ Error loading vocabulary detail:`, error);
         this.error = 'Không thể tải dữ liệu từ vựng. Vui lòng thử lại.';
         this.isLoading = false;
       },
@@ -211,7 +207,7 @@ export class VocabularyDetailComponent implements OnInit {
     if (this.currentPlayingId === audioId && this.currentAudio) {
       if (this.currentAudio.paused) {
         this.currentAudio.play().catch((error) => {
-          console.error('Error resuming audio:', error);
+          /// console.error('Error resuming audio:', error);
         });
       } else {
         this.currentAudio.pause();
@@ -234,7 +230,7 @@ export class VocabularyDetailComponent implements OnInit {
 
     // Play the audio
     this.currentAudio.play().catch((error) => {
-      console.error('Error playing audio:', error);
+      //console.error('Error playing audio:', error);
       this.currentAudio = null;
       this.currentPlayingId = null;
     });
@@ -247,7 +243,7 @@ export class VocabularyDetailComponent implements OnInit {
 
     // Handle audio error
     this.currentAudio.addEventListener('error', () => {
-      console.error('Audio error for:', soundUrl);
+      //console.error('Audio error for:', soundUrl);
       this.currentAudio = null;
       this.currentPlayingId = null;
     });

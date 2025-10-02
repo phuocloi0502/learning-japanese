@@ -3,6 +3,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, timeout, retry, BehaviorSubject } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { ref, set, get, onValue, off } from '@angular/fire/database';
+import { FirebaseService } from './firebase.service';
 
 export interface VocabularyItem {
   lesson: string;
@@ -35,9 +37,7 @@ export interface Chapter {
 export class VocabularyService {
   private cache: Map<string, Chapter[]> = new Map();
 
-  constructor(private http: HttpClient) {
-    //console.log('📚 Vocabulary Service initialized with static files');
-  }
+  constructor(private http: HttpClient) {}
 
   /**
    * Get vocabulary data for a specific level from Firebase Hosting
@@ -120,121 +120,5 @@ export class VocabularyService {
         return lesson.vocabularyList;
       })
     );
-  }
-
-  /**
-   * Search vocabulary across all levels
-   */
-  searchVocabulary(
-    query: string
-  ): Observable<{ level: string; chapter: Chapter; lesson: Lesson; vocabulary: VocabularyItem }[]> {
-    const levels = this.getAvailableLevels();
-    const searchObservables = levels.map((level) =>
-      this.getVocabularyData(level).pipe(
-        map((data) => {
-          const results: {
-            level: string;
-            chapter: Chapter;
-            lesson: Lesson;
-            vocabulary: VocabularyItem;
-          }[] = [];
-
-          for (const chapter of data) {
-            for (const lesson of chapter.lessonList) {
-              for (const vocabulary of lesson.vocabularyList) {
-                if (
-                  vocabulary.kanji.toLowerCase().includes(query.toLowerCase()) ||
-                  vocabulary.furigana.toLowerCase().includes(query.toLowerCase()) ||
-                  vocabulary.meaning.toLowerCase().includes(query.toLowerCase())
-                ) {
-                  results.push({
-                    level,
-                    chapter,
-                    lesson,
-                    vocabulary,
-                  });
-                }
-              }
-            }
-          }
-
-          return results;
-        }),
-        catchError((error) => {
-          //console.error(`Error searching in ${level}:`, error);
-          return of([]);
-        })
-      )
-    );
-
-    return new Observable((observer) => {
-      let completed = 0;
-      const allResults: {
-        level: string;
-        chapter: Chapter;
-        lesson: Lesson;
-        vocabulary: VocabularyItem;
-      }[] = [];
-
-      searchObservables.forEach((obs) => {
-        obs.subscribe({
-          next: (results) => {
-            allResults.push(...results);
-          },
-          complete: () => {
-            completed++;
-            if (completed === searchObservables.length) {
-              observer.next(allResults);
-              observer.complete();
-            }
-          },
-          error: (error) => {
-            completed++;
-            if (completed === searchObservables.length) {
-              observer.next(allResults);
-              observer.complete();
-            }
-          },
-        });
-      });
-    });
-  }
-
-  /**
-   * Get random vocabulary for practice
-   */
-  getRandomVocabulary(level: string, count: number = 10): Observable<VocabularyItem[]> {
-    return this.getVocabularyData(level).pipe(
-      map((data) => {
-        const allVocabulary: VocabularyItem[] = [];
-
-        // Collect all vocabulary from all chapters and lessons
-        for (const chapter of data) {
-          for (const lesson of chapter.lessonList) {
-            allVocabulary.push(...lesson.vocabularyList);
-          }
-        }
-
-        // Shuffle and return random items
-        const shuffled = allVocabulary.sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, count);
-      })
-    );
-  }
-
-  /**
-   * Clear cache
-   */
-  clearCache(): void {
-    this.cache.clear();
-    //console.log('🗑️ Vocabulary cache cleared');
-  }
-
-  /**
-   * Clear cache for specific level
-   */
-  clearCacheForLevel(level: string): void {
-    this.cache.delete(level);
-    //console.log(`🗑️ Vocabulary cache cleared for ${level}`);
   }
 }

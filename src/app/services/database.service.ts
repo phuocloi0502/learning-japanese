@@ -37,27 +37,15 @@ export class DatabaseService {
   ): Promise<void> {
     try {
       if (!this.database) {
-        console.error('Database not initialized');
+        //console.error('Database not initialized');
         throw new Error('Database not initialized');
       }
 
       const path = `vocabulary_status/${userId}/${lessonId}/${vocabularyId}`;
       const statusRef = ref(this.database, path);
 
-      console.log(`🔄 Saving vocabulary status:`, {
-        path,
-        userId,
-        lessonId,
-        vocabularyId,
-        status,
-      });
-
       await set(statusRef, status);
-      console.log(
-        `✅ Successfully saved vocabulary status: ${vocabularyId} = ${status} for user ${userId}`
-      );
     } catch (error) {
-      console.error('❌ Error saving vocabulary status:', error);
       throw error;
     }
   }
@@ -75,7 +63,7 @@ export class DatabaseService {
       }
       return {};
     } catch (error) {
-      console.error('Error getting lesson vocabulary status:', error);
+      //  console.error('Error getting lesson vocabulary status:', error);
       throw error;
     }
   }
@@ -102,7 +90,7 @@ export class DatabaseService {
         }
       });
     } catch (error) {
-      console.error('❌ Lỗi khi lấy vocabularies theo trạng thái:', error);
+      // console.error('❌ Lỗi khi lấy vocabularies theo trạng thái:', error);
       return [];
     }
   }
@@ -120,7 +108,7 @@ export class DatabaseService {
       }
       return {};
     } catch (error) {
-      console.error('Error getting user vocabulary status:', error);
+      //console.error('Error getting user vocabulary status:', error);
       throw error;
     }
   }
@@ -144,7 +132,7 @@ export class DatabaseService {
         return null; // chưa có dữ liệu
       }
     } catch (error) {
-      console.error('❌ Lỗi khi lấy trạng thái từ vựng:', error);
+      //console.error('❌ Lỗi khi lấy trạng thái từ vựng:', error);
       return null;
     }
   }
@@ -223,7 +211,7 @@ export class DatabaseService {
         progressPercentage: Math.round(progressPercentage * 100) / 100,
       };
     } catch (error) {
-      console.error('Error getting user statistics:', error);
+      //.error('Error getting user statistics:', error);
       throw error;
     }
   }
@@ -234,7 +222,7 @@ export class DatabaseService {
   cleanupListeners(): void {
     // Note: In a real app, you'd want to track and clean up specific listeners
     // For now, this is a placeholder
-    console.log('Cleaning up database listeners');
+    //console.log('Cleaning up database listeners');
   }
   /**
    * Lấy danh sách vocabularyId có trạng thái == status (true/false)
@@ -267,7 +255,7 @@ export class DatabaseService {
         return false;
       });
     } catch (err) {
-      console.error('Error reading vocabulary status from DB:', err);
+      // console.error('Error reading vocabulary status from DB:', err);
       throw err;
     }
   }
