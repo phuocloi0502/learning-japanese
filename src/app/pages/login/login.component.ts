@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { browserLocalPersistence, getAuth, setPersistence } from 'firebase/auth';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +21,11 @@ export class LoginComponent implements OnInit {
   error = '';
   success = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     // Check if user is already logged in
@@ -61,6 +66,8 @@ export class LoginComponent implements OnInit {
     this.success = '';
 
     try {
+      const auth = getAuth();
+      await setPersistence(auth, browserLocalPersistence);
       if (this.isSignUp) {
         await this.authService.signUp(this.email, this.password);
         this.success = 'Đăng ký thành công! Đang chuyển hướng...';
@@ -70,33 +77,15 @@ export class LoginComponent implements OnInit {
       } else {
         await this.authService.signIn(this.email, this.password);
         this.success = 'Đăng nhập thành công! Đang chuyển hướng...';
+        this.cdr.detectChanges();
         setTimeout(() => {
           this.router.navigate(['/home']);
         }, 1500);
       }
     } catch (error: any) {
-      //console.error('Auth error:', error);
-
-      // Handle specific Firebase auth errors
-      switch (error.code) {
-        case 'auth/user-not-found':
-          this.error = 'Không tìm thấy tài khoản với email này';
-          break;
-        case 'auth/wrong-password':
-          this.error = 'Mật khẩu không đúng';
-          break;
-        case 'auth/email-already-in-use':
-          this.error = 'Email này đã được sử dụng';
-          break;
-        case 'auth/weak-password':
-          this.error = 'Mật khẩu quá yếu';
-          break;
-        case 'auth/invalid-email':
-          this.error = 'Email không hợp lệ';
-          break;
-        default:
-          this.error = 'Có lỗi xảy ra. Vui lòng thử lại';
-      }
+      this.error = error || 'Đã có lỗi xảy ra. Vui lòng thử lại.';
+      this.isLoading = false;
+      this.cdr.detectChanges();
     } finally {
       this.isLoading = false;
     }

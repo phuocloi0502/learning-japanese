@@ -1,7 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { User } from '@angular/fire/auth';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -21,20 +21,23 @@ export class MenuComponent implements OnInit, OnDestroy {
     { label: 'Ngữ Pháp', route: '/grammar', icon: '📖' },
     { label: 'Kanji', route: '/kanji', icon: '🈯' },
   ];
-
   currentUser: User | null = null;
   showMenu = false;
   currentMenuLabel = 'Trang Chủ';
   showUserInfo = false;
   private destroy$ = new Subject<void>();
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.authService.user$.pipe(takeUntil(this.destroy$)).subscribe((user) => {
       this.currentUser = user;
+      this.cdr.detectChanges();
     });
-    // Cập nhật label khi route thay đổi
     this.router.events.subscribe(() => {
       const currentRoute = this.router.url;
       const found = this.menuItems.find((item) => currentRoute.startsWith(item.route));
@@ -50,9 +53,9 @@ export class MenuComponent implements OnInit, OnDestroy {
   async logout() {
     try {
       await this.authService.signOut();
-    } catch (error) {
-      ////console.error('Logout error:', error);
-    }
+      this.router.navigate(['/login']);
+      this.cdr.detectChanges();
+    } catch (error) {}
   }
 
   toggleMenu() {

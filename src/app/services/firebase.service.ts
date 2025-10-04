@@ -29,10 +29,8 @@ export class FirebaseService {
         this.auth = getAuth(this.app);
         this.database = getDatabase(this.app);
       }
-
-      ////console.log('🔥 Firebase initialized successfully');
     } catch (error) {
-      ////console.error('❌ Firebase initialization failed:', error);
+      console.error('❌ Firebase initialization failed:', error);
     }
   }
 

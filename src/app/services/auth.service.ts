@@ -5,9 +5,11 @@ import {
   signOut,
   onAuthStateChanged,
   User,
+  Auth,
 } from '@angular/fire/auth';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { FirebaseService } from './firebase.service';
+import { FirebaseError } from 'firebase/app';
 
 @Injectable({
   providedIn: 'root',
@@ -15,79 +17,71 @@ import { FirebaseService } from './firebase.service';
 export class AuthService {
   private userSubject = new BehaviorSubject<User | null>(null);
   public user$ = this.userSubject.asObservable();
-  private auth: any;
+  private auth: Auth;
 
   constructor(private firebaseService: FirebaseService) {
     this.auth = this.firebaseService.getAuth();
 
     // Listen to auth state changes
-    if (this.auth) {
-      onAuthStateChanged(this.auth, (user: User | null) => {
-        this.userSubject.next(user);
-        //console.log('Auth state changed:', user ? user.email : 'No user');
-      });
-    }
+    onAuthStateChanged(this.auth, (user: User | null) => {
+      this.userSubject.next(user);
+    });
   }
 
-  /**
-   * Sign in with email and password
-   */
   async signIn(email: string, password: string): Promise<User> {
+    const auth = this.firebaseService.getAuth();
     try {
-      const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
-      //console.log('User signed in:', userCredential.user.email);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      this.userSubject.next(userCredential.user);
       return userCredential.user;
-    } catch (error) {
-      //console.error('Sign in error:', error);
-      throw error;
+    } catch (err: unknown) {
+      const error = err as FirebaseError;
+      console.error('Auth error:', error);
+
+      let message = 'Đăng nhập thất bại';
+
+      if (error.code === 'auth/invalid-credential') {
+        message = 'Email hoặc mật khẩu không đúng';
+      } else if (error.code === 'auth/network-request-failed') {
+        message = 'Email hoặc mật khẩu không đúng';
+      } else if (error.message) {
+        message = error.message;
+      }
+
+      // 👉 Thay vì throw cứng, reject để UI nhận lỗi
+      return Promise.reject(message);
     }
   }
 
-  /**
-   * Sign up with email and password
-   */
   async signUp(email: string, password: string): Promise<User> {
     try {
       const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
-      //console.log('User signed up:', userCredential.user.email);
+      this.userSubject.next(userCredential.user);
       return userCredential.user;
     } catch (error) {
-      //console.error('Sign up error:', error);
+      console.error('Auth error:', error);
       throw error;
     }
   }
 
-  /**
-   * Sign out current user
-   */
   async signOut(): Promise<void> {
-    try {
-      await signOut(this.auth);
-      //console.log('User signed out');
-    } catch (error) {
-      //console.error('Sign out error:', error);
-      throw error;
-    }
+    await signOut(this.auth);
+    this.userSubject.next(null);
   }
 
-  /**
-   * Get current user
-   */
   getCurrentUser(): User | null {
-    return this.auth.currentUser;
+    return this.userSubject.value;
   }
 
-  /**
-   * Check if user is authenticated
-   */
   isAuthenticated(): boolean {
-    return this.auth.currentUser !== null;
+    return this.userSubject.value !== null;
   }
 
-  /**
-   * Get user ID
-   */
   getUserId(): string | null {
-    return this.auth.currentUser?.uid || null;
+    return this.userSubject.value?.uid || null;
+  }
+  isAdmin(): boolean {
+    const adminEmail = 'vophuocloi0502@gmail.com';
+    return this.userSubject.value?.email === adminEmail;
   }
 }

@@ -43,6 +43,7 @@ export class VocabularyDetailComponent implements OnInit {
   isLoading = false;
   error = '';
 
+  isAdmin: boolean = false;
   private destroy$ = new Subject<void>();
   constructor(
     private route: ActivatedRoute,
@@ -72,6 +73,7 @@ export class VocabularyDetailComponent implements OnInit {
         if (user) {
           const userId = this.authService.getUserId();
           if (!userId) return;
+          this.isAdmin = this.authService.isAdmin();
         }
       });
     });
