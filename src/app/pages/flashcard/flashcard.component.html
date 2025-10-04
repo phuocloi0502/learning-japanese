@@ -1,5 +1,6 @@
 <div class="container-fluid">
   <!-- Header + Statistics chung 1 nền -->
+  <button class="btn btn-outline-secondary mb-2 mt-3" (click)="goBack()">← Quay lại</button>
   <div class="row mb-4">
     <div class="col-md-12">
       <div
@@ -93,7 +94,7 @@
   </div>
 
   <!-- Flash Card -->
-  <div *ngIf="!isLoading && !error && vocabularyList.length > 0 && !isEnd" class="row">
+  <div *ngIf="!isLoading && !error && totalCardsCurrent > 0 && !isEnd" class="row">
     <div class="col-12">
       <div class="flashcard-container">
         <!-- Progress Bar -->
@@ -197,7 +198,7 @@
   </div>
 
   <!-- No Data State -->
-  <div *ngIf="(!isLoading && !error && vocabularyList.length === 0) || isEnd" class="row">
+  <div *ngIf="(!isLoading && !error) || isEnd || totalCardsCurrent === 0" class="row">
     <div class="col-12">
       <div class="text-center">
         <h4 class="alert-heading">Không có từ vựng nào cả</h4>

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { VocabularyService, Chapter, Lesson } from '../../services/vocabulary.service';
-import { DatabaseService } from '../../services/database.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -20,7 +19,6 @@ export class VocabularyComponent implements OnInit {
   selectedLevel = localStorage.getItem('selectedLevel') || 'N5';
   availableLevels: string[] = [];
   chapters: Chapter[] = [];
-  chapters1: Chapter[] = [];
   isLoading = false;
   error = '';
 
@@ -30,7 +28,6 @@ export class VocabularyComponent implements OnInit {
   constructor(
     private vocabularyService: VocabularyService,
     private cdr: ChangeDetectorRef,
-    private databaseService: DatabaseService,
     private authService: AuthService
   ) {}
 
@@ -45,8 +42,7 @@ export class VocabularyComponent implements OnInit {
     this.error = '';
     this.chapters = [];
     try {
-      this.chapters = await this.vocabularyService.getVocabularyData1(this.selectedLevel);
-      console.log('📚 Loaded chapters from Firebase Realtime Database:', this.chapters);
+      this.chapters = await this.vocabularyService.getVocabularyData(this.selectedLevel);
       await this.loadRememberedCounts();
       this.isLoading = false;
       this.cdr.detectChanges();
@@ -63,33 +59,20 @@ export class VocabularyComponent implements OnInit {
     localStorage.setItem('selectedLevel', this.selectedLevel);
     this.loadVocabularyData();
   }
-  async loadRememberedCounts() {
+  async loadRememberedCounts(): Promise<void> {
     const userId = this.authService.getUserId();
     if (!userId) return;
+    const tasks = this.chapters.flatMap((chapter) =>
+      chapter.lessonList.map(async (lesson) => {
+        const result = await this.vocabularyService.getRememberedVocabulary(
+          userId,
+          lesson.lesson_id
+        );
+        this.rememberedCountMap[lesson.lesson_id] = result?.length || 0;
+      })
+    );
 
-    const promises: Promise<void>[] = [];
-
-    for (const chapter of this.chapters) {
-      if (!chapter.lessonList) continue; // tránh lỗi null
-
-      for (const lesson of chapter.lessonList) {
-        if (!lesson?.lesson_id) continue;
-
-        // const p = this.databaseService
-        //   .getVocabulariesByStatus(userId, lesson, true)
-        //   .then((result) => {
-        //     this.rememberedCountMap[lesson.lesson_id] = result?.length || 0;
-        //   })
-        //   .catch((err) => {
-        //     console.error(`❌ Lỗi khi lấy vocab cho lesson ${lesson.lesson_id}`, err);
-        //     this.rememberedCountMap[lesson.lesson_id] = 0;
-        //   });
-
-        // promises.push(p);
-      }
-    }
-
-    await Promise.all(promises);
+    await Promise.all(tasks);
     this.cdr.detectChanges();
   }
 

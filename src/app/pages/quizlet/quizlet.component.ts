@@ -10,7 +10,6 @@ import {
   VocabularyItem,
 } from '../../services/vocabulary.service';
 import { AuthService } from '../../services/auth.service';
-import { DatabaseService } from '../../services/database.service';
 import { ensureAuthenticated } from '../../common/utils/helpers';
 export interface AnswerOption {
   text: string;
@@ -50,7 +49,6 @@ export class QuizletComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private vocabularyService: VocabularyService,
     private authService: AuthService,
-    private databaseService: DatabaseService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
@@ -84,35 +82,23 @@ export class QuizletComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  loadLessonData() {
+  async loadLessonData() {
     this.isLoading = true;
     this.error = '';
     this.showCorrectAnswers = false;
     this.userAnswers = {};
     this.notCorrectAnswers = [];
-
-    this.vocabularyService.getVocabularyData(this.level).subscribe({
-      next: async (chapters: Chapter[]) => {
-        // Find the specific chapter
-        this.chapter = chapters.find((c) => c.chapter_number === this.chapterNumber) || null;
-
-        if (!this.chapter) {
-          this.error = `Không tìm thấy chương ${this.chapterNumber} trong cấp độ ${this.level}`;
-          this.isLoading = false;
-          return;
-        }
-
-        // Find the specific lesson
-        this.lesson =
-          this.chapter.lessonList.find((l) => l.lesson_number === this.lessonNumber) || null;
-
-        if (!this.lesson) {
-          this.error = `Không tìm thấy bài ${this.lessonNumber} trong chương ${this.chapterNumber}`;
-          this.isLoading = false;
-          return;
-        }
-        //console.log('Lesson found:', this.lesson.vocabularyList);
-        // this.createAnswerOptions(this.lesson.vocabularyList);
+    try {
+      this.lesson = await this.vocabularyService.getVocabularyByLesson(
+        this.level,
+        this.chapterNumber - 1,
+        this.lessonNumber - 1
+      );
+      if (!this.lesson) {
+        this.error = 'Không tìm thấy bài học.';
+        this.isLoading = false;
+        return;
+      } else {
         this.vocabularyList = this.lesson.vocabularyList.map((item) => ({
           ...item,
           options: this.createAnswerOptions(item),
@@ -126,13 +112,13 @@ export class QuizletComponent implements OnInit, OnDestroy {
         if (!userId) return;
         this.isLoading = false;
         this.cdr.detectChanges();
-      },
-      error: (error) => {
-        //console.error('Error loading lesson data:', error);
-        this.error = 'Không thể tải dữ liệu bài học';
-        this.isLoading = false;
-      },
-    });
+      }
+
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    } catch (error) {
+      this.error = 'Không thể tải dữ liệu từ vựng. Vui lòng thử lại.';
+    }
   }
   // Dùng cho vòng lặp ngoài (các câu hỏi)
   trackQuestion(index: number, item: any): number {
@@ -145,9 +131,6 @@ export class QuizletComponent implements OnInit, OnDestroy {
 
   onAnswerSelected(questionIndex: number, optionIndex: number) {
     this.userAnswers[questionIndex] = optionIndex;
-    // Bạn có thể //console.log để kiểm tra:
-    //console.log(`Câu ${questionIndex} chọn đáp án ${optionIndex}`);
-    //console.log('Tất cả đáp án:', this.userAnswers);
   }
   getCorrectAnswers(): { [questionIndex: number]: number } {
     const correctAnswers: { [questionIndex: number]: number } = {};
@@ -220,5 +203,8 @@ export class QuizletComponent implements OnInit, OnDestroy {
       [arr[i], arr[j]] = [arr[j], arr[i]];
     }
     return arr;
+  }
+  goBack() {
+    this.router.navigate([`/vocabulary/${this.level}/${this.chapterNumber}/${this.lessonNumber}`]);
   }
 }

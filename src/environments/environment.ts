@@ -1,6 +1,5 @@
 export const environment = {
   production: false,
-  dataBaseUrl: 'http://localhost:4200/data/',
   firebase: {
     apiKey: 'AIzaSyC5AHdnIYjqBAu2_QMwWxpa9oly2SHfv2Q',
     authDomain: 'jp-learning-0502.firebaseapp.com',

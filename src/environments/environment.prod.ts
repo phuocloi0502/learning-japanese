@@ -1,6 +1,5 @@
 export const environment = {
   production: true,
-  dataBaseUrl: 'https://jp-learning-0502.web.app/data/',
   firebase: {
     apiKey: 'AIzaSyC5AHdnIYjqBAu2_QMwWxpa9oly2SHfv2Q',
     authDomain: 'jp-learning-0502.firebaseapp.com',

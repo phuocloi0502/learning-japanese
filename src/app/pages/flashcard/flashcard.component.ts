@@ -10,7 +10,6 @@ import {
   VocabularyItem,
 } from '../../services/vocabulary.service';
 import { AuthService } from '../../services/auth.service';
-import { DatabaseService } from '../../services/database.service';
 import { RubyPipe } from '../../common/pipes/ruby-pipe';
 import { ensureAuthenticated } from '../../common/utils/helpers';
 
@@ -30,6 +29,7 @@ export class FlashcardComponent implements OnInit, OnDestroy {
   chapter: Chapter | null = null;
   lesson: Lesson | null = null;
   vocabularyList: VocabularyItem[] = [];
+  vocabularyCurrentList: VocabularyItem[] = [];
 
   // Flash card state
   currentIndex = 0;
@@ -45,8 +45,8 @@ export class FlashcardComponent implements OnInit, OnDestroy {
   rememberedCards = 0;
   notRememberedCards = 0;
 
-  rememberedList: number[] = [];
-  notRememberedList: number[] = [];
+  rememberedList: Number[] = [];
+  notRememberedList: Number[] = [];
 
   isLoading = false;
   error = '';
@@ -61,15 +61,12 @@ export class FlashcardComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private vocabularyService: VocabularyService,
     private authService: AuthService,
-    private databaseService: DatabaseService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-    // Luôn scroll lên đầu trang khi vào component
     window.scrollTo({ top: 0, behavior: 'auto' });
-    // Get route parameters
     this.route.params.subscribe((params: any) => {
       this.level = params['level'];
       this.chapterNumber = +params['chapter'];
@@ -88,97 +85,52 @@ export class FlashcardComponent implements OnInit, OnDestroy {
     });
     const userId = ensureAuthenticated(this.authService, this.router);
     if (!userId) return;
-    this.loadUserProgress();
   }
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
   }
-  filterMode: 'all' | 'remembered' | 'notRemembered' = 'all'; // mặc định là all
+  filterMode: 'all' | 'remembered' | 'notRemembered' = 'all';
 
   setFilterMode(mode: 'all' | 'remembered' | 'notRemembered') {
     this.filterMode = mode;
     this.cdr.detectChanges();
-    // if (mode === 'all') {
-    //   this.vocabularyList = this.lesson.vocabularyList;
-    // } else {
-    //   this.listRememberedVocabulary(mode === 'remembered');
-    // }
   }
 
-  loadLessonData() {
+  async loadLessonData() {
     this.setFilterMode('all');
     this.isLoading = true;
     this.error = '';
     this.isEnd = false;
 
-    this.vocabularyService.getVocabularyData(this.level).subscribe({
-      next: async (chapters: Chapter[]) => {
-        // Find the specific chapter
-        this.chapter = chapters.find((c) => c.chapter_number === this.chapterNumber) || null;
-
-        if (!this.chapter) {
-          this.error = `Không tìm thấy chương ${this.chapterNumber} trong cấp độ ${this.level}`;
-          this.isLoading = false;
-          return;
-        }
-
-        // Find the specific lesson
-        this.lesson =
-          this.chapter.lessonList.find((l) => l.lesson_number === this.lessonNumber) || null;
-
-        if (!this.lesson) {
-          this.error = `Không tìm thấy bài ${this.lessonNumber} trong chương ${this.chapterNumber}`;
-          this.isLoading = false;
-          return;
-        }
-
-        //this.vocabularyList = [...this.lesson.vocabularyList];
-        this.vocabularyList = this.shuffleVocabularyList(this.lesson.vocabularyList);
-        this.totalCardsOfLesson = this.lesson.vocabularyList.length;
-        this.totalCardsCurrent = this.totalCardsOfLesson;
-        this.currentIndex = 0;
-        this.showAnswer = false;
-        this.updateStatistics();
-        if (!this.lesson) return;
-
-        // const userId = ensureAuthenticated(this.authService, this.router);
-        // if (!userId) return;
-        // const result = await this.databaseService.getVocabulariesByStatus(
-        //   userId,
-        //   this.lesson,
-        //   true
-        // );
-        // this.rememberedCards = result?.length;
-        // this.notRememberedCards = this.totalCardsOfLesson - this.rememberedCards;
+    try {
+      this.lesson = await this.vocabularyService.getVocabularyByLesson(
+        this.level,
+        this.chapterNumber - 1,
+        this.lessonNumber - 1
+      );
+      if (!this.lesson) {
+        this.error = 'Không tìm thấy bài học.';
         this.isLoading = false;
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        //console.error('Error loading lesson data:', error);
-        this.error = 'Không thể tải dữ liệu bài học';
-        this.isLoading = false;
-      },
-    });
-  }
+        return;
+      } else {
+        this.vocabularyList = this.lesson.vocabularyList;
+      }
 
-  async loadUserProgress() {
-    if (!this.isAuthenticated || !this.lesson) return;
-
-    const userId = this.authService.getUserId();
-    if (!userId) return;
-
-    // Load progress for current lesson only
-    this.databaseService
-      .getLessonVocabularyStatus(userId, this.lesson.lesson_id)
-      .then((status) => {
-        this.userProgress = status;
-        this.updateStatistics();
-      })
-      .catch((error) => {
-        //console.error('Error loading user progress:', error);
-      });
+      this.vocabularyCurrentList = this.shuffleVocabularyList(this.lesson.vocabularyList);
+      this.totalCardsOfLesson = this.lesson.vocabularyList.length;
+      this.totalCardsCurrent = this.totalCardsOfLesson;
+      const userId = ensureAuthenticated(this.authService, this.router);
+      if (!userId) return;
+      await this.updateStatistics();
+      this.currentIndex = 0;
+      this.showAnswer = false;
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    } catch (error) {
+      this.error = 'Không thể tải dữ liệu từ vựng. Vui lòng thử lại.';
+    }
   }
 
   toggleAnswer() {
@@ -186,81 +138,60 @@ export class FlashcardComponent implements OnInit, OnDestroy {
   }
 
   async listRememberedVocabulary(status: boolean) {
-    const userId = ensureAuthenticated(this.authService, this.router);
-    if (!userId) return;
-
+    this.currentIndex = 0;
     if (!this.lesson) return;
-    this.isEnd = false;
-
-    // const result = await this.databaseService.getVocabulariesByStatus(userId, this.lesson, status);
-
-    // if (status) {
-    //   this.setFilterMode('remembered');
-    //   this.rememberedList = result.map((v) => v.vocabulary_id);
-    //   this.vocabularyList = this.lesson.vocabularyList.filter((v) =>
-    //     this.rememberedList.includes(v.vocabulary_id)
-    //   );
-    //   this.vocabularyList = this.shuffleVocabularyList(this.vocabularyList);
-    //   this.totalCardsCurrent = this.vocabularyList.length;
-    //   this.currentIndex = 0;
-    //   this.cdr.detectChanges();
-    //   //console.log('✅ Danh sách đã nhớ:', this.vocabularyList);
-    // } else {
-    //   this.setFilterMode('notRemembered');
-    //   this.notRememberedList = result.map((v) => v.vocabulary_id);
-    //   this.vocabularyList = this.lesson.vocabularyList.filter((v) =>
-    //     this.notRememberedList.includes(v.vocabulary_id)
-    //   );
-    //   this.vocabularyList = this.shuffleVocabularyList(this.vocabularyList);
-    //   this.totalCardsCurrent = this.vocabularyList.length;
-    //   this.currentIndex = 0;
-    //   this.cdr.detectChanges();
-    //   //console.log('❌ Danh sách chưa nhớ:', this.vocabularyList);
-    // }
-
-    this.cdr.detectChanges();
+    try {
+      if (status) {
+        this.setFilterMode('remembered');
+        this.vocabularyCurrentList = this.vocabularyList.filter((item) =>
+          this.rememberedList.includes(item.vocabulary_id)
+        );
+        this.totalCardsCurrent = this.vocabularyCurrentList.length;
+      } else {
+        this.setFilterMode('notRemembered');
+        this.vocabularyCurrentList = this.vocabularyList.filter(
+          (item) => !this.rememberedList.includes(item.vocabulary_id)
+        );
+        this.totalCardsCurrent = this.vocabularyCurrentList.length;
+      }
+      this.isEnd = false;
+      this.cdr.detectChanges();
+    } catch (error) {
+      this.error = 'Không thể tải dữ liệu từ vựng. Vui lòng thử lại.';
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    }
   }
 
-  markAsRemembered() {
+  async markAsRemembered() {
     const userId = ensureAuthenticated(this.authService, this.router);
     if (!userId) return;
 
     const currentVocab = this.getCurrentVocabulary();
     if (!currentVocab || !this.lesson) return;
-    // Save to database
-    this.databaseService
+    this.vocabularyService
       .saveVocabularyStatus(userId, this.lesson.lesson_id, currentVocab.vocabulary_id)
-      .then(() => {
-        this.userProgress[currentVocab.vocabulary_id] = true;
-        this.updateStatistics();
+      .then(async () => {
+        await this.updateStatistics();
         this.nextCard();
         this.cdr.detectChanges();
-        //console.log(this.currentIndex);
       })
-      .catch((error) => {
-        //console.error('Error saving vocabulary status:', error);
-      });
+      .catch((error) => {});
   }
 
-  markAsNotRemembered() {
+  async markAsNotRemembered() {
     const userId = ensureAuthenticated(this.authService, this.router);
     if (!userId) return;
     const currentVocab = this.getCurrentVocabulary();
     if (!currentVocab || !this.lesson) return;
-    if (!userId) return;
-
-    // Save to database
-    this.databaseService
+    this.vocabularyService
       .removeVocabularyStatus(userId, this.lesson.lesson_id, currentVocab.vocabulary_id)
-      .then(() => {
-        this.userProgress[currentVocab.vocabulary_id] = false;
-        this.updateStatistics();
+      .then(async () => {
+        await this.updateStatistics();
         this.nextCard();
         this.cdr.detectChanges();
       })
-      .catch((error) => {
-        //console.error('Error saving vocabulary status:', error);
-      });
+      .catch((error) => {});
   }
 
   nextCard() {
@@ -271,7 +202,7 @@ export class FlashcardComponent implements OnInit, OnDestroy {
       this.currentAudio = null;
       this.currentPlayingId = null;
     }
-    if (this.currentIndex < this.vocabularyList.length - 1) {
+    if (this.currentIndex < this.vocabularyCurrentList.length - 1) {
       this.currentIndex++;
       this.showAnswer = false;
     } else {
@@ -302,32 +233,23 @@ export class FlashcardComponent implements OnInit, OnDestroy {
     return arr;
   }
   getCurrentVocabulary(): VocabularyItem | null {
-    if (this.vocabularyList.length === 0) return null;
-    return this.vocabularyList[this.currentIndex];
+    if (this.vocabularyCurrentList.length === 0) return null;
+    return this.vocabularyCurrentList[this.currentIndex];
   }
 
-  updateStatistics() {
-    this.rememberedCards = Object.values(this.userProgress).filter(
-      (status) => status === true
-    ).length;
+  async updateStatistics() {
+    this.rememberedList = await this.vocabularyService.getRememberedVocabulary(
+      this.authService.getUserId() || '',
+      this.lesson ? this.lesson.lesson_id : 0
+    );
+    this.rememberedCards = this.rememberedList.length;
     this.notRememberedCards = this.totalCardsOfLesson - this.rememberedCards;
+    this.getProgressPercentage();
   }
 
   getProgressPercentage(): number {
     if (this.totalCardsOfLesson === 0) return 0;
     return Math.round((this.rememberedCards / this.totalCardsOfLesson) * 100);
-  }
-
-  isCurrentVocabularyRemembered(): boolean {
-    const currentVocab = this.getCurrentVocabulary();
-    if (!currentVocab) return false;
-    return this.userProgress[currentVocab.vocabulary_id] === true;
-  }
-
-  isCurrentVocabularyNotRemembered(): boolean {
-    const currentVocab = this.getCurrentVocabulary();
-    if (!currentVocab) return false;
-    return this.userProgress[currentVocab.vocabulary_id] === false;
   }
 
   goToVocabulary() {
@@ -416,5 +338,8 @@ export class FlashcardComponent implements OnInit, OnDestroy {
       this.toggleAnswer();
       event.preventDefault(); // ngăn chặn cuộn trang khi nhấn Space
     }
+  }
+  goBack() {
+    this.router.navigate([`/vocabulary/${this.level}/${this.chapterNumber}/${this.lessonNumber}`]);
   }
 }

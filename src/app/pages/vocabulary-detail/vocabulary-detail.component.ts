@@ -9,7 +9,6 @@ import {
 } from '../../services/vocabulary.service';
 import { RubyPipe } from '../../common/pipes/ruby-pipe';
 import { AuthService } from '../../services/auth.service';
-import { DatabaseService } from '../../services/database.service';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -50,8 +49,7 @@ export class VocabularyDetailComponent implements OnInit {
     private router: Router,
     private vocabularyService: VocabularyService,
     private cdr: ChangeDetectorRef,
-    private authService: AuthService,
-    private databaseService: DatabaseService
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -63,7 +61,6 @@ export class VocabularyDetailComponent implements OnInit {
       if (this.level && this.chapterNumber && this.lessonNumber) {
         this.loadVocabularyDetail();
       }
-      //this.fullAudio = `https://cloud.jtest.net/tango/sound/${this.level.toLowerCase()}/section/Chapter${this.chapterNumber}Section${this.lessonNumber}.mp3`
       this.fullAudio = `https://cloud.jtest.net/tango/sound/${this.level.toLowerCase()}/section/Chapter${
         this.chapterNumber
       }Section${this.lessonNumber}.mp3`;
@@ -85,23 +82,27 @@ export class VocabularyDetailComponent implements OnInit {
     this.error = '';
     this.vocabularyList = [];
     try {
-      this.vocabularyList = await this.vocabularyService.getVocabularyByLesson1(
+      this.lesson = await this.vocabularyService.getVocabularyByLesson(
         this.level,
         this.chapterNumber - 1,
         this.lessonNumber - 1
       );
-      console.log('📚 Loaded vocabulary list:', this.vocabularyList);
-
-      this.allChapters = await this.vocabularyService.getVocabularyData1(this.level);
+      if (this.lesson) {
+        this.vocabularyList = this.lesson.vocabularyList;
+      } else {
+        this.vocabularyList = [];
+      }
+      this.allChapters = await this.vocabularyService.getVocabularyData(this.level);
+      const rememberedList = await this.vocabularyService.getRememberedVocabulary(
+        this.authService.getUserId() || '',
+        this.lesson ? this.lesson.lesson_id : 0
+      );
+      this.remembered = rememberedList.length || 0;
       this.isLoading = false;
       this.fullAudio = `https://cloud.jtest.net/tango/sound/${this.level.toLowerCase()}/section/Chapter${
         this.chapterNumber
       }Section${this.lessonNumber}.mp3`;
       const userId = this.authService.getUserId();
-
-      // if (!userId) return;
-      // const result = await this.databaseService.getVocabulariesByStatus(userId, this.lessonNumber);
-      // this.remembered = result?.length || 0;
       this.cdr.detectChanges();
     } catch (error) {
       this.error = 'Không thể tải dữ liệu từ vựng. Vui lòng thử lại.';
