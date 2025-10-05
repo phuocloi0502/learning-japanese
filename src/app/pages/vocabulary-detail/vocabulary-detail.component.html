@@ -31,6 +31,11 @@
                   Luyện tập trắc nghiệm
                 </a>
               </div>
+              <div class="mt-3" *ngIf="isAdmin">
+                <button class="btn btn-danger" (click)="handleAdminMode()">
+                  {{ isAdminMode ? 'View' : 'Edit' }}
+                </button>
+              </div>
             </div>
             <!-- Audio Player -->
             <div class="mt-3">
@@ -87,9 +92,35 @@
               <div class="vocab-header">
                 <div class="vocab-number">{{ i + 1 }}</div>
                 <div class="vocab-main">
-                  <h3 class="vocab-kanji">{{ vocab.kanji }}</h3>
-
-                  <div class="vocab-furigana">{{ vocab.furigana }}</div>
+                  <div
+                    *ngIf="isEditMode && isAdmin && editingVocabularyItem === vocab; else viewKanji"
+                  >
+                    <input
+                      [(ngModel)]="vocab.kanji"
+                      [name]="'kanji-' + i"
+                      class="form-control vocab-kanji"
+                      placeholder="Kanji"
+                    />
+                  </div>
+                  <ng-template #viewKanji>
+                    <h3 class="vocab-kanji">{{ vocab.kanji }}</h3>
+                  </ng-template>
+                  <div
+                    *ngIf="
+                      isEditMode && isAdmin && editingVocabularyItem === vocab;
+                      else viewFurigana
+                    "
+                  >
+                    <input
+                      [(ngModel)]="vocab.furigana"
+                      [name]="'furigana-' + i"
+                      class="form-control vocab-furigana"
+                      placeholder="Furigana"
+                    />
+                  </div>
+                  <ng-template #viewFurigana>
+                    <div class="vocab-furigana">{{ vocab.furigana }}</div>
+                  </ng-template>
                 </div>
                 <div class="vocab-actions">
                   <button
@@ -105,16 +136,80 @@
               </div>
 
               <div class="vocab-meaning">
-                <strong>{{ vocab.meaning }}</strong>
+                <div
+                  *ngIf="isEditMode && isAdmin && editingVocabularyItem === vocab; else viewMeaning"
+                >
+                  <input
+                    [(ngModel)]="vocab.meaning"
+                    [name]="'meaning-' + i"
+                    class="form-control"
+                    placeholder="Meaning"
+                  />
+                </div>
+                <ng-template #viewMeaning>
+                  <strong>{{ vocab.meaning }}</strong>
+                </ng-template>
               </div>
               <div class="vocab-example" *ngIf="vocab.example">
-                <div class="example-japanese" [innerHTML]="vocab.example | ruby"></div>
-                <div class="example-meaning">{{ vocab.example_meaning }}</div>
+                <div
+                  *ngIf="isAdmin && isEditMode && editingVocabularyItem === vocab; else viewExample"
+                >
+                  <input
+                    [(ngModel)]="vocab.example"
+                    [name]="'example-' + i"
+                    class="form-control"
+                    placeholder="Example"
+                  />
+                </div>
+                <ng-template #viewExample>
+                  <div class="example-japanese" [innerHTML]="vocab.example | ruby"></div>
+                </ng-template>
+                <div
+                  *ngIf="
+                    isAdmin && isEditMode && editingVocabularyItem === vocab;
+                    else viewExampleMeaning
+                  "
+                >
+                  <input
+                    [(ngModel)]="vocab.example_meaning"
+                    [name]="'example-meaning-' + i"
+                    class="form-control"
+                    placeholder="Example Meaning"
+                  />
+                </div>
+                <ng-template #viewExampleMeaning>
+                  <div class="example-meaning">{{ vocab.example_meaning }}</div>
+                </ng-template>
               </div>
             </div>
-            <div class="card-footer text-end">
-              <button class="btn btn-primary" type="button">Edit</button>
-              <button class="btn btn-secondary mx-3" type="button">Cancel</button>
+            <div class="card-footer">
+              <ng-container *ngIf="isEditMode && isAdmin && editingVocabularyItem === vocab">
+                <button
+                  class="btn btn-success"
+                  type="button"
+                  (click)="handleOpenSaveConfirm(vocab)"
+                >
+                  <i class="bi bi-check-circle-fill"></i>
+                </button>
+                <button class="btn btn-secondary mx-3" type="button" (click)="handleCancel()">
+                  <i class="bi bi-x-circle"></i>
+                </button>
+              </ng-container>
+
+              <ng-container *ngIf="isAdminMode && isAdmin && !isEditMode">
+                <div class="d-flex justify-content-between">
+                  <button class="btn btn-primary" type="button" (click)="setEditMode(vocab)">
+                    <i class="bi bi-pencil-square"></i>
+                  </button>
+                  <button
+                    class="btn btn-secondary"
+                    type="button"
+                    (click)="handleOpenRollBackConfirm(vocab)"
+                  >
+                    <i class="bi bi-arrow-clockwise"></i>
+                  </button>
+                </div>
+              </ng-container>
             </div>
           </div>
         </div>

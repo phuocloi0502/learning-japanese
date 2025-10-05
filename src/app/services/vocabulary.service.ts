@@ -1,11 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of, timeout, retry, BehaviorSubject } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
-import { ref, set, get, onValue, off, remove } from '@angular/fire/database';
+import { HttpClient } from '@angular/common/http';
+import { ref, set, get, remove } from '@angular/fire/database';
 import { FirebaseService } from './firebase.service';
-import { log } from 'console';
 
 export interface VocabularyItem {
   lesson: string;
@@ -16,6 +12,17 @@ export interface VocabularyItem {
   example: string;
   example_meaning: string;
   sound_url: string;
+}
+export interface VocabularyItemWithIndex extends VocabularyItem {
+  index: number;
+  [key: string]: any;
+}
+export interface VocabularyItemWithOptions extends VocabularyItem {
+  options: AnswerOption[];
+}
+export interface AnswerOption {
+  text: string;
+  isCorrect: boolean;
 }
 
 export interface Lesson {
@@ -41,6 +48,94 @@ export class VocabularyService {
   constructor(private http: HttpClient, private firebaseService: FirebaseService) {
     this.database = this.firebaseService.getDatabase();
   }
+  async saveVocabularyDetail(
+    level: string,
+    chapter: number,
+    lessonNumber: number,
+    vocabularyItem: VocabularyItemWithIndex
+  ): Promise<void> {
+    if (!this.database) {
+      throw new Error('Database not initialized');
+    }
+
+    const { index, ...data } = vocabularyItem;
+    const basePath = `vocabulary_data/${level}/${chapter}/lessonList/${lessonNumber}/vocabularyList/${index}`;
+    const vocabRef = ref(this.database, basePath);
+
+    try {
+      // 1️⃣ Lấy dữ liệu hiện tại
+      const snapshot = await get(vocabRef);
+      const oldData = snapshot.exists() ? snapshot.val() : {};
+
+      // 2️⃣ Tạo object backup chỉ cho những field chưa có _bk
+      const dataWithBackup: Record<string, any> = {};
+      for (const key in data) {
+        if (data.hasOwnProperty(key)) {
+          // Chỉ backup nếu chưa có field _bk tương ứng
+          if (oldData[key] !== undefined && oldData[`${key}_bk`] === undefined) {
+            dataWithBackup[`${key}_bk`] = oldData[key];
+          }
+          dataWithBackup[key] = data[key]; // giá trị mới
+        }
+      }
+
+      // 3️⃣ Ghi lên Firebase, giữ nguyên các field khác
+      await set(vocabRef, {
+        ...oldData, // giữ các field khác
+        ...dataWithBackup, // cập nhật giá trị mới + backup nếu cần
+      });
+    } catch (error) {
+      console.error('Error saving vocabulary item:', error);
+      throw error;
+    }
+  }
+  async rollBackVocabularyDetail(
+    level: string,
+    chapter: number,
+    lessonNumber: number,
+    vocabularyItem: VocabularyItemWithIndex
+  ): Promise<void> {
+    if (!this.database) {
+      throw new Error('Database not initialized');
+    }
+
+    const { index } = vocabularyItem;
+    const basePath = `vocabulary_data/${level}/${chapter}/lessonList/${lessonNumber}/vocabularyList/${index}`;
+    const vocabRef = ref(this.database, basePath);
+
+    try {
+      // Lấy dữ liệu hiện tại
+      const snapshot = await get(vocabRef);
+      if (!snapshot.exists()) return; // không có gì để rollback
+      const oldData = snapshot.val();
+
+      const rolledBackData: Record<string, any> = {};
+      let hasBackup = false;
+
+      // Lấy các field _bk để khôi phục
+      for (const key in oldData) {
+        if (oldData.hasOwnProperty(key) && key.endsWith('_bk')) {
+          const originalKey = key.slice(0, -3); // bỏ "_bk"
+          rolledBackData[originalKey] = oldData[key];
+          hasBackup = true;
+        }
+      }
+
+      if (!hasBackup) {
+        console.log(
+          `No backup fields (_bk) found for vocabulary index ${index}. Rollback skipped.`
+        );
+        return;
+      }
+
+      // Ghi lại vào Firebase
+      await set(vocabRef, rolledBackData);
+    } catch (error) {
+      console.error('Error rolling back vocabulary item:', error);
+      throw error;
+    }
+  }
+
   async saveVocabularyStatus(
     userId: string,
     lessonId: number,

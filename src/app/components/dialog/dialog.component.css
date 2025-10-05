@@ -1,0 +1,22 @@
+/* Đặt trong file CSS/SCSS toàn cục hoặc dùng ::ng-deep nếu cần */
+.mat-mdc-dialog-container {
+  /* Bo tròn 4 góc cho dialog */
+  border-radius: 20px !important; 
+  /* Thêm đổ bóng nổi bật hơn (tùy chọn) */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important; 
+}
+
+/* Tinh chỉnh tiêu đề và chân dialog */
+.dialog-title {
+  font-weight: 600; /* Dùng font-weight của Bootstrap 5 */
+}
+
+/* Đảm bảo content và actions có padding đẹp */
+.dialog-content p {
+    margin-bottom: 0;
+}
+
+.dialog-actions {
+    /* Đảm bảo các nút căn phải */
+    justify-content: flex-end; 
+}

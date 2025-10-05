@@ -6,15 +6,19 @@ import {
   Chapter,
   Lesson,
   VocabularyItem,
+  VocabularyItemWithIndex,
 } from '../../services/vocabulary.service';
 import { RubyPipe } from '../../common/pipes/ruby-pipe';
 import { AuthService } from '../../services/auth.service';
 import { Subject, takeUntil } from 'rxjs';
+import { FormControl, FormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../components/dialog/dialog.component';
 
 @Component({
   selector: 'app-vocabulary-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, RubyPipe],
+  imports: [CommonModule, RouterModule, RubyPipe, FormsModule],
   templateUrl: './vocabulary-detail.component.html',
   styleUrl: './vocabulary-detail.component.css',
 })
@@ -25,7 +29,7 @@ export class VocabularyDetailComponent implements OnInit {
 
   chapter: Chapter | null = null;
   lesson: Lesson | null = null;
-  vocabularyList: VocabularyItem[] = [];
+  vocabularyList: VocabularyItemWithIndex[] = [];
 
   remembered: number = 0;
   isAuthenticated = false;
@@ -42,15 +46,19 @@ export class VocabularyDetailComponent implements OnInit {
   isFullPlaying: boolean = false;
   isLoading = false;
   error = '';
-
+  // Edit mode
   isAdmin: boolean = false;
+  isAdminMode: boolean = false;
+  isEditMode: boolean = false;
+  editingVocabularyItem: VocabularyItem | null = null;
   private destroy$ = new Subject<void>();
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private vocabularyService: VocabularyService,
     private cdr: ChangeDetectorRef,
-    private authService: AuthService
+    private authService: AuthService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -74,6 +82,7 @@ export class VocabularyDetailComponent implements OnInit {
           const userId = this.authService.getUserId();
           if (!userId) return;
           this.isAdmin = this.authService.isAdmin();
+          this.cdr.detectChanges();
         }
       });
     });
@@ -90,7 +99,11 @@ export class VocabularyDetailComponent implements OnInit {
         this.lessonNumber - 1
       );
       if (this.lesson) {
-        this.vocabularyList = this.lesson.vocabularyList;
+        this.vocabularyList = this.lesson.vocabularyList.map((item, index) => ({
+          ...item,
+          index: index,
+        }));
+        //console.log(this.vocabularyList);
       } else {
         this.vocabularyList = [];
       }
@@ -110,7 +123,77 @@ export class VocabularyDetailComponent implements OnInit {
       this.error = 'Không thể tải dữ liệu từ vựng. Vui lòng thử lại.';
     }
   }
+  openConfirm(vocab: VocabularyItemWithIndex, action: 'save' | 'rollback') {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '450px',
+      data: {
+        title: action === 'save' ? 'Confirm edit' : 'Confirm rollback',
+        message:
+          action === 'save'
+            ? 'Are you sure you want to save changes to this vocabulary?'
+            : 'Are you sure you want to rollback this vocabulary to the original data?',
+      },
+    });
 
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) return;
+
+      if (action === 'save') {
+        this.handleSave(vocab);
+      } else if (action === 'rollback') {
+        this.handleRollback(vocab);
+      }
+    });
+  }
+
+  async handleSave(vocab: VocabularyItemWithIndex) {
+    await this.vocabularyService.saveVocabularyDetail(
+      this.level,
+      this.chapterNumber - 1,
+      this.lessonNumber - 1,
+      vocab
+    );
+
+    this.isEditMode = false;
+    this.editingVocabularyItem = null;
+    this.loadVocabularyDetail();
+  }
+
+  handleAdminMode() {
+    this.isAdminMode = !this.isAdminMode;
+    this.cdr.detectChanges();
+  }
+
+  setEditMode(vocab?: VocabularyItem) {
+    this.isEditMode = true;
+    this.editingVocabularyItem = vocab || null;
+    this.cdr.detectChanges();
+  }
+  handleCancel() {
+    this.isEditMode = false;
+    this.editingVocabularyItem = null;
+    this.loadVocabularyDetail();
+  }
+  handleOpenSaveConfirm(vocab: VocabularyItemWithIndex) {
+    this.openConfirm(vocab, 'save');
+  }
+  handleOpenRollBackConfirm(vocab: VocabularyItemWithIndex) {
+    this.openConfirm(vocab, 'rollback');
+  }
+  async handleRollback(vocab: VocabularyItemWithIndex) {
+    await this.vocabularyService.rollBackVocabularyDetail(
+      this.level,
+      this.chapterNumber - 1,
+      this.lessonNumber - 1,
+      vocab
+    );
+    this.loadVocabularyDetail();
+  }
+
+  // ngOnDestroy() {
+  //   this.destroy$.next();
+  //   this.destroy$.complete();
+  // }
   playFullAudio() {
     if (!this.fullAudio) return;
 

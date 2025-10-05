@@ -81,7 +81,7 @@ export class AuthService {
     return this.userSubject.value?.uid || null;
   }
   isAdmin(): boolean {
-    const adminEmail = 'vophuocloi0502@gmail.com';
-    return this.userSubject.value?.email === adminEmail;
+    const adminEmails = ['vophuocloi0502@gmail.com', 'baong190520@gmail.com'];
+    return adminEmails.includes(this.userSubject.value?.email || '');
   }
 }

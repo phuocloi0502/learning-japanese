@@ -8,16 +8,12 @@ import {
   Chapter,
   Lesson,
   VocabularyItem,
+  VocabularyItemWithOptions,
+  AnswerOption,
 } from '../../services/vocabulary.service';
 import { AuthService } from '../../services/auth.service';
 import { ensureAuthenticated } from '../../common/utils/helpers';
-export interface AnswerOption {
-  text: string;
-  isCorrect: boolean;
-}
-export interface VocabularyItemWithOptions extends VocabularyItem {
-  options: AnswerOption[];
-}
+
 @Component({
   selector: 'app-quizlet',
   standalone: true,

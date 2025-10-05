@@ -1,0 +1,11 @@
+<h3 class="dialog-title text-primary p-3">{{ data.title }}</h3>
+
+<mat-dialog-content class="dialog-content border-top pt-3">
+  <p class="text-muted">{{ data.message }}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog-actions border-top pt-3 mt-3">
+  <button type="button" class="btn btn-outline-danger me-2" (click)="onCancel()">Cancel</button>
+
+  <button type="button" class="btn btn-primary" (click)="onConfirm()">OK</button>
+</mat-dialog-actions>
