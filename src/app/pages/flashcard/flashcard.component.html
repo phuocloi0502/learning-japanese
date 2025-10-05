@@ -198,7 +198,7 @@
   </div>
 
   <!-- No Data State -->
-  <div *ngIf="(!isLoading && !error) || isEnd || totalCardsCurrent === 0" class="row">
+  <div *ngIf="!isLoading && !error && (isEnd || totalCardsCurrent === 0)" class="row">
     <div class="col-12">
       <div class="text-center">
         <h4 class="alert-heading">Không có từ vựng nào cả</h4>
