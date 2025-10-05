@@ -182,7 +182,7 @@
                 </ng-template>
               </div>
             </div>
-            <div class="card-footer">
+            <div class="card-footer" *ngIf="isAdminMode && isAdmin && !isEditMode">
               <ng-container *ngIf="isEditMode && isAdmin && editingVocabularyItem === vocab">
                 <button
                   class="btn btn-success"
@@ -196,20 +196,18 @@
                 </button>
               </ng-container>
 
-              <ng-container *ngIf="isAdminMode && isAdmin && !isEditMode">
-                <div class="d-flex justify-content-between">
-                  <button class="btn btn-primary" type="button" (click)="setEditMode(vocab)">
-                    <i class="bi bi-pencil-square"></i>
-                  </button>
-                  <button
-                    class="btn btn-secondary"
-                    type="button"
-                    (click)="handleOpenRollBackConfirm(vocab)"
-                  >
-                    <i class="bi bi-arrow-clockwise"></i>
-                  </button>
-                </div>
-              </ng-container>
+              <div class="d-flex justify-content-between">
+                <button class="btn btn-primary" type="button" (click)="setEditMode(vocab)">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+                <button
+                  class="btn btn-secondary"
+                  type="button"
+                  (click)="handleOpenRollBackConfirm(vocab)"
+                >
+                  <i class="bi bi-arrow-clockwise"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
