@@ -25,7 +25,7 @@ export class FlashcardComponent implements OnInit, OnDestroy {
   chapterNumber = 0;
   lessonNumber = 0;
   isEnd = false;
-
+  allChapters: Chapter[] = [];
   chapter: Chapter | null = null;
   lesson: Lesson | null = null;
   vocabularyList: VocabularyItem[] = [];
@@ -116,6 +116,10 @@ export class FlashcardComponent implements OnInit, OnDestroy {
         return;
       } else {
         this.vocabularyList = this.lesson.vocabularyList;
+        this.allChapters = await this.vocabularyService.getVocabularyData(this.level);
+        if (this.allChapters) {
+          this.chapter = this.allChapters[this.chapterNumber - 1];
+        }
       }
 
       this.vocabularyCurrentList = this.shuffleVocabularyList(this.lesson.vocabularyList);

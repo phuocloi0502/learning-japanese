@@ -25,7 +25,7 @@ export class QuizletComponent implements OnInit, OnDestroy {
   level = '';
   chapterNumber = 0;
   lessonNumber = 0;
-
+  allChapters: Chapter[] = [];
   chapter: Chapter | null = null;
   lesson: Lesson | null = null;
   vocabularyList: VocabularyItemWithOptions[] = [];
@@ -95,6 +95,10 @@ export class QuizletComponent implements OnInit, OnDestroy {
         this.isLoading = false;
         return;
       } else {
+        this.allChapters = await this.vocabularyService.getVocabularyData(this.level);
+        if (this.allChapters) {
+          this.chapter = this.allChapters[this.chapterNumber - 1];
+        }
         this.vocabularyList = this.lesson.vocabularyList.map((item) => ({
           ...item,
           options: this.createAnswerOptions(item),

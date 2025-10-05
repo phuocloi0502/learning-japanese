@@ -108,6 +108,10 @@ export class VocabularyDetailComponent implements OnInit {
         this.vocabularyList = [];
       }
       this.allChapters = await this.vocabularyService.getVocabularyData(this.level);
+      if (this.allChapters) {
+        this.chapter = this.allChapters[this.chapterNumber - 1];
+      }
+
       const rememberedList = await this.vocabularyService.getRememberedVocabulary(
         this.authService.getUserId() || '',
         this.lesson ? this.lesson.lesson_id : 0
