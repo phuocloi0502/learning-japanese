@@ -114,7 +114,10 @@
         <div class="flashcard" (click)="toggleAnswer()">
           <div class="card-content">
             <div class="vocab-kanji">{{ getCurrentVocabulary()?.kanji }}</div>
-            <div class="vocab-furigana">{{ getCurrentVocabulary()?.furigana }}</div>
+            <div class="d-flex justify-content-center gap-3 align-items-center">
+              <div class="vocab-furigana">{{ getCurrentVocabulary()?.furigana }}</div>
+              <div class="vocab-han" *ngIf="showAnswer">{{ getCurrentVocabulary()?.han }}</div>
+            </div>
 
             <div class="vocab-answer" *ngIf="showAnswer">
               <div class="vocab-meaning">{{ getCurrentVocabulary()?.meaning }}</div>

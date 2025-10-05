@@ -12,6 +12,7 @@ export interface VocabularyItem {
   example: string;
   example_meaning: string;
   sound_url: string;
+  han: string;
 }
 export interface VocabularyItemWithIndex extends VocabularyItem {
   index: number;
@@ -70,13 +71,18 @@ export class VocabularyService {
       // 2️⃣ Tạo object backup chỉ cho những field chưa có _bk
       const dataWithBackup: Record<string, any> = {};
       for (const key in data) {
-        if (data.hasOwnProperty(key)) {
-          // Chỉ backup nếu chưa có field _bk tương ứng
-          if (oldData[key] !== undefined && oldData[`${key}_bk`] === undefined) {
-            dataWithBackup[`${key}_bk`] = oldData[key];
-          }
-          dataWithBackup[key] = data[key]; // giá trị mới
+        if (!data.hasOwnProperty(key) || key.endsWith('_bk')) continue;
+
+        // Nếu có dữ liệu cũ mà chưa có backup → backup giá trị cũ
+        if (oldData[key] !== undefined && oldData[`${key}_bk`] === undefined) {
+          dataWithBackup[`${key}_bk`] = oldData[key];
         }
+        // Nếu là field mới hoàn toàn → tạo luôn backup bằng giá trị mới
+        else if (oldData[key] === undefined) {
+          dataWithBackup[`${key}_bk`] = data[key];
+        }
+
+        dataWithBackup[key] = data[key];
       }
 
       // 3️⃣ Ghi lên Firebase, giữ nguyên các field khác

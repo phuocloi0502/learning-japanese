@@ -127,10 +127,13 @@
   margin-bottom: 20px;
   line-height: 1.2;
 }
+.vocab-han{
+  font-size: 1.8rem;
+  font-weight: bold;
+}
 
 .vocab-furigana {
   font-size: 1.5rem;
-  margin-bottom: 20px;
   opacity: 0.9;
   font-style: italic;
 }
