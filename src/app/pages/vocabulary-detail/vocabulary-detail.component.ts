@@ -282,10 +282,11 @@ export class VocabularyDetailComponent implements OnInit {
     });
 
     // Handle audio end
-    this.currentAudio.addEventListener('ended', () => {
+    this.currentAudio.onended = () => {
       this.currentAudio = null;
       this.currentPlayingId = null;
-    });
+      this.cdr.detectChanges(); // Cập nhật lại UI để getAudioButtonText đổi trạng thái
+    };
 
     // Handle audio error
     this.currentAudio.addEventListener('error', () => {
