@@ -139,7 +139,7 @@
         <div class="vocab-actions-flashcard">
           <button
             *ngIf="getCurrentVocabulary()?.sound_url"
-            class="btn btn-lg btn-outline-primary audio-btn"
+            class="btn btn-sm btn-outline-primary audio-btn"
             [class.playing]="isAudioPlaying()"
             (click)="playAudio()"
             [title]="isAudioPlaying() ? 'Tạm dừng' : 'Nghe phát âm'"
