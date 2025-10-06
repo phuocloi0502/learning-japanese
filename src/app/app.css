@@ -18,4 +18,5 @@ body {
 .main-content {
   min-height: calc(100vh - 70px);
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding-bottom: 50px;
 }
