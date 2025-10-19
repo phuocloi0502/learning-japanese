@@ -328,6 +328,7 @@ export class VocabularyDetailComponent implements OnInit {
   }
   @HostListener('document:keydown.enter', ['$event'])
   onEnterPressed(event: any) {
+    if (this.dialog.openDialogs.length > 0) return;
     const target = event.target as HTMLElement;
     if (target.tagName.toLowerCase() === 'button') return;
     if (this.isEditMode && this.editingVocabularyItem) {
