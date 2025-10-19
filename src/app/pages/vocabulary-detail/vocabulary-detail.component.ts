@@ -30,6 +30,7 @@ export class VocabularyDetailComponent implements OnInit {
   chapter: Chapter | null = null;
   lesson: Lesson | null = null;
   vocabularyList: VocabularyItemWithIndex[] = [];
+  originalVocabularyList: VocabularyItemWithIndex[] = [];
 
   remembered: number = 0;
   isAuthenticated = false;
@@ -50,7 +51,7 @@ export class VocabularyDetailComponent implements OnInit {
   isAdmin: boolean = false;
   isAdminMode: boolean = false;
   isEditMode: boolean = false;
-  editingVocabularyItem: VocabularyItem | null = null;
+  editingVocabularyItem: VocabularyItemWithIndex | null = null;
   private destroy$ = new Subject<void>();
   constructor(
     private route: ActivatedRoute,
@@ -92,6 +93,7 @@ export class VocabularyDetailComponent implements OnInit {
     this.isLoading = true;
     this.error = '';
     this.vocabularyList = [];
+    this.originalVocabularyList = [];
     try {
       this.lesson = await this.vocabularyService.getVocabularyByLesson(
         this.level,
@@ -103,6 +105,7 @@ export class VocabularyDetailComponent implements OnInit {
           ...item,
           index: index,
         }));
+        this.originalVocabularyList = JSON.parse(JSON.stringify(this.vocabularyList));
         //console.log(this.vocabularyList);
       } else {
         this.vocabularyList = [];
@@ -149,6 +152,9 @@ export class VocabularyDetailComponent implements OnInit {
       }
     });
   }
+  trackById(index: number, item: VocabularyItemWithIndex) {
+    return item.vocabulary_id;
+  }
 
   async handleSave(vocab: VocabularyItemWithIndex) {
     await this.vocabularyService.saveVocabularyDetail(
@@ -158,9 +164,18 @@ export class VocabularyDetailComponent implements OnInit {
       vocab
     );
 
+    // Cập nhật item trong danh sách
+    const index = this.vocabularyList.findIndex((v) => v.index === vocab.index);
+    if (index !== -1) {
+      this.vocabularyList[index] = { ...this.vocabularyList[index], ...vocab };
+      this.vocabularyList = [...this.vocabularyList];
+    }
+    this.originalVocabularyList = JSON.parse(JSON.stringify(this.vocabularyList));
     this.isEditMode = false;
     this.editingVocabularyItem = null;
-    this.loadVocabularyDetail();
+    this.cdr.detectChanges();
+
+    //  this.loadVocabularyDetail();
   }
 
   handleAdminMode() {
@@ -168,15 +183,16 @@ export class VocabularyDetailComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  setEditMode(vocab?: VocabularyItem) {
+  setEditMode(vocab?: VocabularyItemWithIndex) {
     this.isEditMode = true;
     this.editingVocabularyItem = vocab || null;
     this.cdr.detectChanges();
   }
   handleCancel() {
+    this.vocabularyList = JSON.parse(JSON.stringify(this.originalVocabularyList));
     this.isEditMode = false;
     this.editingVocabularyItem = null;
-    this.loadVocabularyDetail();
+    this.cdr.detectChanges();
   }
   handleOpenSaveConfirm(vocab: VocabularyItemWithIndex) {
     this.openConfirm(vocab, 'save');
@@ -309,5 +325,13 @@ export class VocabularyDetailComponent implements OnInit {
       return '⏸️';
     }
     return '🔊';
+  }
+  @HostListener('document:keydown.enter', ['$event'])
+  onEnterPressed(event: any) {
+    const target = event.target as HTMLElement;
+    if (target.tagName.toLowerCase() === 'button') return;
+    if (this.isEditMode && this.editingVocabularyItem) {
+      this.handleOpenSaveConfirm(this.editingVocabularyItem);
+    }
   }
 }
