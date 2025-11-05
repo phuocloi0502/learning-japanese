@@ -67,7 +67,7 @@
   <div *ngIf="!isLoading && !error && vocabularyList.length > 0" class="row">
     <div class="container my-5">
       <div class="row justify-content-center mb-4">
-        <div class="col-lg-8 col-md-10">
+        <div class="col-lg-6 col-md-10">
           <div class="card shadow-lg border-0 p-4">
             <div
               *ngIf="showCorrectAnswers"
@@ -85,19 +85,19 @@
 
             <div
               *ngFor="let item of vocabularyList; let qIndex = index; trackBy: trackQuestion"
-              class="mb-1 p-2"
+              class="mb-1 p-2 ms-5"
               [ngClass]="{
                 'bg-opacity-25 bg-danger rounded-4': isWrongAnswer(qIndex)
               }"
             >
-              <div class="card-text fs-5 fw-bold text-dark mb-4">
+              <div class="card-text fs-2 fw-bold text-dark mb-4" style="color: #233ba8 !important">
                 Câu {{ qIndex + 1 }}: {{ item.kanji }}
               </div>
 
               <div class="ms-0 d-grid gap-2 mb-4 ms-4">
                 <div
                   *ngFor="let option of item.options; let optIndex = index; trackBy: trackOption"
-                  class="form-check p-1 rounded-3 d-flex align-items-center"
+                  class="form-check p-1 rounded-3 d-flex align-items-center fs-4"
                 >
                   <input
                     class="form-check-input flex-shrink-0 me-3"
