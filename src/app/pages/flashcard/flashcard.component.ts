@@ -30,10 +30,12 @@ export class FlashcardComponent implements OnInit, OnDestroy {
   lesson: Lesson | null = null;
   vocabularyList: VocabularyItem[] = [];
   vocabularyCurrentList: VocabularyItem[] = [];
+  showFurigana = false;
 
   // Flash card state
   currentIndex = 0;
   showAnswer = false;
+  baseFuriganaState = false;
 
   // User progress
   userProgress: { [vocabularyId: number]: boolean } = {};
@@ -139,6 +141,25 @@ export class FlashcardComponent implements OnInit, OnDestroy {
 
   toggleAnswer() {
     this.showAnswer = !this.showAnswer;
+
+    if (this.showAnswer) {
+      // khi show answer thì luôn bật furigana
+      this.showFurigana = true;
+    } else {
+      // khi tắt show answer thì trả furigana về trạng thái checkbox
+      this.showFurigana = this.baseFuriganaState;
+    }
+  }
+
+  toggleFurigana(event: Event) {
+    const checkbox = event.target as HTMLInputElement;
+    this.showFurigana = checkbox.checked;
+    this.baseFuriganaState = !this.baseFuriganaState;
+    // Nếu checkbox bật và đang ở chế độ show answer thì vẫn cho phép hiển thị
+    if (!this.showAnswer) {
+      this.showFurigana = this.baseFuriganaState;
+    }
+    this.cdr.detectChanges();
   }
 
   async listRememberedVocabulary(status: boolean) {
@@ -332,6 +353,7 @@ export class FlashcardComponent implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     };
   }
+
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     if (event.key === 'ArrowRight') {

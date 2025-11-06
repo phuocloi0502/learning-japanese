@@ -96,6 +96,16 @@
   <!-- Flash Card -->
   <div *ngIf="!isLoading && !error && totalCardsCurrent > 0 && !isEnd" class="row">
     <div class="col-12">
+      <div class="col-12 mb-3 d-flex justify-content-center align-items-center gap-3 fs-4">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          name="show-furigana"
+          id="show-furigana"
+          (change)="toggleFurigana($event)"
+        />
+        <label for="show-furigana">Hiển thị Furigana</label>
+      </div>
       <div class="flashcard-container">
         <!-- Progress Bar -->
         {{ currentIndex + 1 }} / {{ totalCardsCurrent }}
@@ -115,7 +125,9 @@
           <div class="card-content">
             <div class="vocab-kanji">{{ getCurrentVocabulary()?.kanji }}</div>
             <div class="d-flex justify-content-center gap-3 align-items-center">
-              <div class="vocab-furigana">{{ getCurrentVocabulary()?.furigana }}</div>
+              <div class="vocab-furigana" *ngIf="showFurigana">
+                {{ getCurrentVocabulary()?.furigana }}
+              </div>
               <div class="vocab-han" *ngIf="showAnswer">{{ getCurrentVocabulary()?.han }}</div>
             </div>
 
