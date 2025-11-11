@@ -6,6 +6,13 @@ import { AuthService } from '../../services/auth.service';
 import { User } from '@angular/fire/auth';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
+export interface MenuItem {
+  label: string;
+  route?: string;
+  icon?: string;
+  action?: string; // e.g. 'logout'
+}
+
 @Component({
   selector: 'app-menu',
   standalone: true,
@@ -14,13 +21,24 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   styleUrl: './menu.component.css',
 })
 export class MenuComponent implements OnInit, OnDestroy {
-  menuItems = [
+  baseMenuItems: MenuItem[] = [
     { label: 'Trang Chủ', route: '/home', icon: '🏠' },
     { label: 'Từ Vựng', route: '/vocabulary', icon: '📚' },
     //{ label: 'Flash Card', route: '/flashcard', icon: '🎴' },
     { label: 'Ngữ Pháp', route: '/grammar', icon: '📖' },
     { label: 'Kanji', route: '/kanji', icon: '🈯' },
   ];
+
+  get menuItems(): MenuItem[] {
+    const items: MenuItem[] = [...this.baseMenuItems];
+    if (this.currentUser) {
+      // thêm mục đăng xuất (sử dụng action để xử lý click)
+      items.push({ label: 'Đăng xuất', route: '/login', icon: '🔒', action: 'logout' });
+    } else {
+      items.push({ label: 'Đăng nhập', route: '/login', icon: '🔑' });
+    }
+    return items;
+  }
   currentUser: User | null = null;
   showMenu = false;
   currentMenuLabel = 'Trang Chủ';
@@ -40,7 +58,9 @@ export class MenuComponent implements OnInit, OnDestroy {
     });
     this.router.events.subscribe(() => {
       const currentRoute = this.router.url;
-      const found = this.menuItems.find((item) => currentRoute.startsWith(item.route));
+      const found = this.menuItems.find(
+        (item) => item.route && currentRoute.startsWith(item.route)
+      );
       this.currentMenuLabel = found ? found.label : '';
     });
   }
@@ -56,6 +76,22 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.router.navigate(['/login']);
       this.cdr.detectChanges();
     } catch (error) {}
+  }
+
+  // Xử lý click cho menu: gọi logout nếu item.action==='logout', ngược lại điều hướng
+  onMenuItemClick(item: MenuItem | any) {
+    if (!item) return;
+    if (item.action === 'logout') {
+      this.logout();
+    } else if (item.route) {
+      this.router.navigate([item.route]);
+    }
+
+    // Đóng menu mobile nếu đang mở
+    if (this.showMenu) {
+      this.showMenu = false;
+    }
+    this.cdr.detectChanges();
   }
 
   toggleMenu() {

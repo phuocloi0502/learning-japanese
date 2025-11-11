@@ -16,11 +16,9 @@
       <ul class="nav-menu-mobile">
         <li class="nav-item" *ngFor="let item of menuItems">
           <a
-            [routerLink]="item.route"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: false }"
             class="nav-link"
-            (click)="toggleMenu()"
+            role="button"
+            (click)="onMenuItemClick(item); $event.preventDefault()"
           >
             <span class="nav-icon">{{ item.icon }}</span>
             {{ item.label }}
@@ -31,12 +29,7 @@
     <!-- Desktop menu -->
     <ul class="nav-menu d-none d-md-flex ms-4 mb-0">
       <li class="nav-item" *ngFor="let item of menuItems">
-        <a
-          [routerLink]="item.route"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: false }"
-          class="nav-link"
-        >
+        <a class="nav-link" role="button" (click)="onMenuItemClick(item); $event.preventDefault()">
           <span class="nav-icon">{{ item.icon }}</span>
           {{ item.label }}
         </a>
@@ -53,10 +46,10 @@
             (click)="userTooltip.show(0)"
             >👤</span
           >
-          <button class="btn btn-outline-light btn-sm ms-2" (click)="logout()">Đăng xuất</button>
+          <!-- <button class="btn btn-outline-light btn-sm ms-2" (click)="logout()">Đăng xuất</button> -->
         </ng-container>
         <ng-template #loginBtn>
-          <a routerLink="/login" class="btn btn-outline-light btn-sm ms-2"> Đăng nhập </a>
+          <!-- <a routerLink="/login" class="btn btn-outline-light btn-sm ms-2"> Đăng nhập </a> -->
         </ng-template>
       </div>
     </ul>
