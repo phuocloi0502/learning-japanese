@@ -32,7 +32,7 @@
           </div>
         </div>
         <div
-          class="col-md-6 d-flex flex-column justify-content-center align-items-end"
+          class="col-md-6 d-flex flex-column justify-content-center align-items-end statistics-desktop"
           style="height: 120px"
         >
           <div class="d-flex flex-row w-100 mb-2 justify-content-center flex-wrap gap-lg-5">
@@ -96,6 +96,41 @@
   <!-- Flash Card -->
   <div *ngIf="!isLoading && !error && totalCardsCurrent > 0 && !isEnd" class="row">
     <div class="col-12">
+      <div
+        class="col-md-6 d-flex flex-column justify-content-center align-items-end statistics-mobile"
+        style="height: 120px"
+      >
+        <div class="d-flex flex-row w-100 mb-2 justify-content-center flex-wrap gap-lg-5">
+          <button
+            class="btn btn-action text-primary flex-fill"
+            (click)="loadLessonData()"
+            [class.active]="filterMode === 'all'"
+          >
+            <div class="stat-number">{{ totalCardsOfLesson }}</div>
+            Tổng từ
+          </button>
+          <button
+            class="btn btn-action text-success flex-fill"
+            (click)="listRememberedVocabulary(true)"
+            [class.active]="filterMode === 'remembered'"
+          >
+            <div class="stat-number">{{ rememberedCards }}</div>
+            Đã nhớ
+          </button>
+          <button
+            class="btn btn-action text-danger flex-fill"
+            (click)="listRememberedVocabulary(false)"
+            [class.active]="filterMode === 'notRemembered'"
+          >
+            <div class="stat-number">{{ notRememberedCards }}</div>
+            Chưa nhớ
+          </button>
+          <button class="btn btn-action text-info flex-fill">
+            <div class="stat-number text-info">{{ getProgressPercentage() }}%</div>
+            Tiến độ
+          </button>
+        </div>
+      </div>
       <div class="col-12 mb-3 d-flex justify-content-center align-items-center gap-3 fs-4">
         <input
           class="form-check-input"
@@ -162,7 +197,7 @@
 
         <!-- Action Buttons -->
         <div class="card-actions">
-          <div class="row">
+          <div class="row action-buttons-group-desktop">
             <div class="col-md-3">
               <button
                 class="btn btn-action"
@@ -191,6 +226,44 @@
               </div>
             </div>
             <div class="col-md-3">
+              <button
+                class="btn btn-action"
+                (click)="nextCard()"
+                [disabled]="currentIndex === vocabularyList.length - 1"
+              >
+                Tiếp ➡️
+              </button>
+            </div>
+          </div>
+          <div class="action-buttons-group-mobile">
+            <div class="">
+              <button
+                class="btn btn-action"
+                (click)="previousCard()"
+                [disabled]="currentIndex === 0"
+              >
+                ⬅️ Trước
+              </button>
+            </div>
+            <div class="">
+              <div class="action-buttons">
+                <button
+                  class="btn btn-action me-2 text-white"
+                  style="background-color: green"
+                  (click)="markAsRemembered()"
+                >
+                  Đã nhớ
+                </button>
+                <button
+                  class="btn btn-action text-white"
+                  style="background-color: red"
+                  (click)="markAsNotRemembered()"
+                >
+                  Chưa nhớ
+                </button>
+              </div>
+            </div>
+            <div class="">
               <button
                 class="btn btn-action"
                 (click)="nextCard()"

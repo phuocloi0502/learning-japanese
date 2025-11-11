@@ -74,8 +74,33 @@
   <!-- Vocabulary Content -->
   <div *ngIf="!isLoading && !error && chapters.length > 0" class="row">
     <div class="col-12">
+      <!-- Stats Mobile -->
+      <div class="card mb-4 stats-card-mobile">
+        <div class="card-body">
+          <div class="d-flex justify-content-between text-center">
+            <div class="col-md-4">
+              <div class="stat-item">
+                <div class="stat-number text-primary">{{ chapters.length }}</div>
+                <div class="stat-label">Chương</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="stat-item">
+                <div class="stat-number text-success">{{ getTotalVocabularyCount() }}</div>
+                <div class="stat-label">Từ vựng</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="stat-item">
+                <div class="stat-number text-warning">{{ selectedLevel }}</div>
+                <div class="stat-label">Cấp độ</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- Stats -->
-      <div class="card mb-4">
+      <div class="card mb-4 stats-card">
         <div class="card-body">
           <div class="row text-center">
             <div class="col-md-4">

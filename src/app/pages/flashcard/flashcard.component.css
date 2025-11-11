@@ -188,7 +188,7 @@
   margin-top: 20px;
 }
 .action-buttons .btn-action {
-  width: 50%;
+  width: 100%;
 }
 
 
@@ -391,7 +391,31 @@
   min-width: 260px;
   max-width: 100%;
 }
+.statistics-mobile{
+  display: none !important;
+}
+.action-buttons-group-mobile{
+  display: none !important;
+}
+
 @media (max-width: 900px) {
+  .action-buttons-group-desktop{
+    display: none !important;
+  }
+  .action-buttons-group-mobile{
+
+    display: flex !important;
+    justify-content: center;
+    gap: 10px;
+    flex-direction: row;
+ 
+  }
+  .statistics-desktop{
+    display: none !important;
+  }
+    .statistics-mobile{
+    display: block !important;
+  }
   .d-flex.flex-row.align-items-center.bg-light.rounded-3.ps-4.py-3.mt-2 {
     flex-direction: column;
     min-height: unset;

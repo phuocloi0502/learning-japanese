@@ -14,7 +14,7 @@
             <p class="lead text-muted" *ngIf="chapter && lesson">
               {{ chapter.chapter_name }} - {{ lesson.lesson_name }}
             </p>
-            <div class="d-flex gap-5">
+            <div class="d-flex gap-5 button-group-mobile">
               <div class="mt-3">
                 <a
                   [routerLink]="['/flashcard', level, chapterNumber, lessonNumber]"
@@ -38,11 +38,11 @@
               </div>
             </div>
             <!-- Audio Player -->
-            <div class="mt-3">
+            <!-- <div class="mt-3 ">
               <button class="btn btn-outline-primary" (click)="playFullAudio()">
                 {{ isFullPlaying ? '⏸️ Toàn bài' : '▶️ Toàn bài' }}
               </button>
-            </div>
+            </div> -->
           </div>
           <div class="text-end">
             <span class="badge bg-primary fs-6" *ngIf="vocabularyList.length > 0">
@@ -176,7 +176,7 @@
                   <input
                     [(ngModel)]="vocab.example"
                     [name]="'example-' + i"
-                    class="form-control"
+                    class="form-control mb-2"
                     placeholder="Example"
                   />
                 </div>

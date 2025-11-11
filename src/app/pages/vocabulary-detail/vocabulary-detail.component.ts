@@ -27,6 +27,8 @@ export class VocabularyDetailComponent implements OnInit {
   chapterNumber = 0;
   lessonNumber = 0;
 
+  userId: string | null = null;
+
   chapter: Chapter | null = null;
   lesson: Lesson | null = null;
   vocabularyList: VocabularyItemWithIndex[] = [];
@@ -80,8 +82,8 @@ export class VocabularyDetailComponent implements OnInit {
       this.authService.user$.pipe(takeUntil(this.destroy$)).subscribe((user) => {
         this.isAuthenticated = !!user;
         if (user) {
-          const userId = this.authService.getUserId();
-          if (!userId) return;
+          this.userId = this.authService.getUserId();
+          if (!this.userId) return;
           this.isAdmin = this.authService.isAdmin();
           this.cdr.detectChanges();
         }
@@ -115,16 +117,18 @@ export class VocabularyDetailComponent implements OnInit {
         this.chapter = this.allChapters[this.chapterNumber - 1];
       }
 
-      const rememberedList = await this.vocabularyService.getRememberedVocabulary(
-        this.authService.getUserId() || '',
-        this.lesson ? this.lesson.lesson_id : 0
-      );
-      this.remembered = rememberedList.length || 0;
+      if (this.userId != null) {
+        const rememberedList = await this.vocabularyService.getRememberedVocabulary(
+          this.authService.getUserId() || '',
+          this.lesson ? this.lesson.lesson_id : 0
+        );
+        this.remembered = rememberedList.length || 0;
+      }
       this.isLoading = false;
       this.fullAudio = `https://cloud.jtest.net/tango/sound/${this.level.toLowerCase()}/section/Chapter${
         this.chapterNumber
       }Section${this.lessonNumber}.mp3`;
-      const userId = this.authService.getUserId();
+
       this.cdr.detectChanges();
     } catch (error) {
       this.error = 'Không thể tải dữ liệu từ vựng. Vui lòng thử lại.';
