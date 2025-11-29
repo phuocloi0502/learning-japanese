@@ -462,6 +462,8 @@
   display: flex;
   justify-content: center;
   gap: 10px;
+  background-color: white;
+  border-radius:  50%;
 }
 @keyframes pulse {
   0% {
