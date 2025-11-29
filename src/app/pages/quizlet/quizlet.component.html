@@ -85,7 +85,7 @@
 
             <div
               *ngFor="let item of vocabularyList; let qIndex = index; trackBy: trackQuestion"
-              class="mb-1 p-2 ms-5"
+              class="mb-1 p-2 ms-1"
               [ngClass]="{
                 'bg-opacity-25 bg-danger rounded-4': isWrongAnswer(qIndex)
               }"

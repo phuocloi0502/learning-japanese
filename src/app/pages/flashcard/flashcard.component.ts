@@ -168,14 +168,14 @@ export class FlashcardComponent implements OnInit, OnDestroy {
     try {
       if (status) {
         this.setFilterMode('remembered');
-        this.vocabularyCurrentList = this.vocabularyList.filter((item) =>
-          this.rememberedList.includes(item.vocabulary_id)
+        this.vocabularyCurrentList = this.shuffleVocabularyList(
+          this.vocabularyList.filter((item) => this.rememberedList.includes(item.vocabulary_id))
         );
         this.totalCardsCurrent = this.vocabularyCurrentList.length;
       } else {
         this.setFilterMode('notRemembered');
-        this.vocabularyCurrentList = this.vocabularyList.filter(
-          (item) => !this.rememberedList.includes(item.vocabulary_id)
+        this.vocabularyCurrentList = this.shuffleVocabularyList(
+          this.vocabularyList.filter((item) => !this.rememberedList.includes(item.vocabulary_id))
         );
         this.totalCardsCurrent = this.vocabularyCurrentList.length;
       }
@@ -198,6 +198,7 @@ export class FlashcardComponent implements OnInit, OnDestroy {
       .saveVocabularyStatus(userId, this.lesson.lesson_id, currentVocab.vocabulary_id)
       .then(async () => {
         await this.updateStatistics();
+        this.showFurigana = this.baseFuriganaState;
         this.nextCard();
         this.cdr.detectChanges();
       })
@@ -205,6 +206,7 @@ export class FlashcardComponent implements OnInit, OnDestroy {
   }
 
   async markAsNotRemembered() {
+    this.showFurigana = this.baseFuriganaState;
     const userId = ensureAuthenticated(this.authService, this.router);
     if (!userId) return;
     const currentVocab = this.getCurrentVocabulary();
@@ -213,10 +215,12 @@ export class FlashcardComponent implements OnInit, OnDestroy {
       .removeVocabularyStatus(userId, this.lesson.lesson_id, currentVocab.vocabulary_id)
       .then(async () => {
         await this.updateStatistics();
+
         this.nextCard();
         this.cdr.detectChanges();
       })
       .catch((error) => {});
+    this.showFurigana = this.baseFuriganaState;
   }
 
   nextCard() {

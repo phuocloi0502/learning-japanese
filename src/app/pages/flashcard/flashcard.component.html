@@ -1,30 +1,25 @@
 <div class="container-fluid">
   <!-- Header + Statistics chung 1 nền -->
-  <button class="btn btn-outline-secondary mb-2 mt-3" (click)="goBack()">← Quay lại</button>
+
   <div class="row mb-4">
     <div class="col-md-12">
       <div
         class="row g-0 align-items-center bg-light rounded-3 ps-4 mt-2"
-        style="
-          border-left: 6px solid #667eea;
-          min-height: 120px;
-          height: 120px;
-          justify-content: center;
-        "
+        style="border-left: 6px solid #667eea; height: 85px; justify-content: center"
       >
         <div
           class="col-md-6 d-flex flex-row align-items-center justify-content-center"
-          style="height: 120px"
+          style="height: 80px"
         >
           <div
             class="me-3 d-flex align-items-center justify-content-center"
-            style="font-size: 2.5rem; height: 120px"
+            style="font-size: 2.5rem; height: 80px"
           >
             🎴
           </div>
           <div class="flex-grow-1 d-flex flex-column justify-content-center" style="height: 100%">
-            <h2 class="fw-bold mb-1" style="font-size: 2rem; color: #333">
-              {{ level }} - Chương {{ chapterNumber }} - Bài {{ lessonNumber }}
+            <h2 class="fw-bold mb-1" style="font-size: 1.3rem; color: #333">
+              {{ level }} - Chương {{ chapterNumber }}- Bài {{ lessonNumber }}
             </h2>
             <div class="lead text-muted mb-0" *ngIf="chapter && lesson" style="font-size: 1.1rem">
               {{ chapter.chapter_name }} - {{ lesson.lesson_name }}
@@ -33,9 +28,12 @@
         </div>
         <div
           class="col-md-6 d-flex flex-column justify-content-center align-items-end statistics-desktop"
-          style="height: 120px"
+          style="height: 80px"
         >
-          <div class="d-flex flex-row w-100 mb-2 justify-content-center flex-wrap gap-lg-5">
+          <div
+            class="d-flex flex-row w-100 mb-2 justify-content-center flex-wrap gap-lg-2"
+            style="margin-bottom: 0 !important"
+          >
             <button
               class="btn btn-action text-primary flex-fill"
               (click)="loadLessonData()"
@@ -131,7 +129,12 @@
           </button>
         </div>
       </div>
-      <div class="col-12 mb-3 d-flex justify-content-center align-items-center gap-3 fs-4">
+
+      <div class="col-12 d-flex justify-content-center align-items-center gap-3 fs-4">
+        <div class="position-absolute start-0 m-3">
+          <button class="btn btn-outline-secondary mt-3" (click)="goBack()">← Quay lại</button>
+        </div>
+
         <input
           class="form-check-input"
           type="checkbox"
@@ -163,7 +166,9 @@
               <div class="vocab-furigana" *ngIf="showFurigana">
                 {{ getCurrentVocabulary()?.furigana }}
               </div>
-              <div class="vocab-han" *ngIf="showAnswer">{{ getCurrentVocabulary()?.han }}</div>
+              <div class="vocab-han" *ngIf="showAnswer">
+                {{ getCurrentVocabulary()?.han?.toUpperCase() }}
+              </div>
             </div>
 
             <div class="vocab-answer" *ngIf="showAnswer">
