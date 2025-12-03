@@ -129,10 +129,18 @@
       <div class="row">
         <div class="col-lg-6 col-xl-4 mb-4" *ngFor="let chapter of chapters">
           <div class="card h-100 chapter-card">
-            <div class="card-header">
+            <div class="card-header d-flex align-items-center justify-content-between">
               <h5 class="card-title mb-0">
                 📖 Chương {{ chapter.chapter_number }}: {{ chapter.chapter_name }}
               </h5>
+              <div>
+                <a
+                  [routerLink]="['/flashcardchapter', selectedLevel, chapter.chapter_number]"
+                  class="btn btn-primary"
+                >
+                  Ôn tập
+                </a>
+              </div>
             </div>
             <div class="card-body">
               <p class="card-text">

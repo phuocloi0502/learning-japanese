@@ -161,6 +161,45 @@ export class VocabularyService {
       throw error;
     }
   }
+  async saveVocabularyChapterStatus(
+    userId: string,
+    levelId: string,
+    chapterId: number,
+    vocabularyId: number
+  ): Promise<void> {
+    try {
+      if (!this.database) {
+        //console.error('Database not initialized');
+        throw new Error('Database not initialized');
+      }
+
+      const path = `vocabulary_status/${userId}/${levelId}/c_${chapterId}/${vocabularyId}`;
+      const statusRef = ref(this.database, path);
+
+      await set(statusRef, '');
+    } catch (error) {
+      throw error;
+    }
+  }
+  async removeVocabularyChapterStatus(
+    userId: string,
+    levelId: string,
+    chapterId: number,
+    vocabularyId: number
+  ): Promise<void> {
+    try {
+      if (!this.database) {
+        throw new Error('Database not initialized');
+      }
+
+      const path = `vocabulary_status/${userId}/${levelId}/c_${chapterId}/${vocabularyId}`;
+      const statusRef = ref(this.database, path);
+
+      await remove(statusRef);
+    } catch (error) {
+      throw error;
+    }
+  }
   async removeVocabularyStatus(
     userId: string,
     lessonId: number,
@@ -226,7 +265,39 @@ export class VocabularyService {
       throw error;
     }
   }
-
+  async getRememberedVocabularyChapter(
+    userId: string,
+    leveId: string,
+    chapterId: number
+  ): Promise<Number[]> {
+    try {
+      const statusRef = ref(this.database, `vocabulary_status/${userId}/${leveId}/c_${chapterId}`);
+      const snapshot = await get(statusRef);
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        return Object.keys(data).map((key) => Number(key));
+      }
+      return [];
+    } catch (error) {
+      throw error;
+    }
+  }
+  async getRememberedVocabularyByLesson(
+    userId: string,
+    lessonId: number | string
+  ): Promise<Number[]> {
+    try {
+      const statusRef = ref(this.database, `vocabulary_status/${userId}/${lessonId}`);
+      const snapshot = await get(statusRef);
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        return Object.keys(data).map((key) => Number(key));
+      }
+      return [];
+    } catch (error) {
+      throw error;
+    }
+  }
   getAvailableLevels(): string[] {
     return ['N1', 'N2', 'N3', 'N4', 'N5'];
   }

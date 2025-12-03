@@ -126,14 +126,14 @@
   text-align: center;
 }
 
-.btn-primary {
+/* .btn-primary {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
   padding: 10px 25px;
   border-radius: 8px;
   font-weight: 600;
   transition: all 0.3s ease;
-}
+} */
 
 .btn-primary:hover {
   transform: translateY(-2px);
