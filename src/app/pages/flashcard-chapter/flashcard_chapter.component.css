@@ -139,11 +139,14 @@
 }
 
 .vocab-answer {
-  margin-top: 30px;
-  padding-top: 10px;
-  border-top: 2px solid rgba(255, 255, 255, 0.3);
+  /* margin-top: 30px;
+  padding-top: 10px; */
+  /* border-top: 2px solid rgba(255, 255, 255, 0.3); */
 }
-
+.top-border{
+  border-top: 2px solid rgba(255, 255, 255, 0.3);
+  margin-top: 30px;;
+}
 .vocab-meaning {
   font-size: 2rem;
   font-weight: bold;

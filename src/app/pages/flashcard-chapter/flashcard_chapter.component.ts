@@ -30,7 +30,7 @@ export class FlashcardChapterComponent implements OnInit, OnDestroy {
   vocabularyChapterList: VocabularyItem[] = [];
   vocabularyCurrentList: VocabularyItem[] = [];
   showFurigana = false;
-
+  isMeansMode = false;
   // Flash card state
   currentIndex = 0;
   showAnswer = false;
@@ -134,24 +134,22 @@ export class FlashcardChapterComponent implements OnInit, OnDestroy {
 
   toggleAnswer() {
     this.showAnswer = !this.showAnswer;
-
+  }
+  async toggleMeans(event: Event) {
+    await this.updateStatistics();
+    const checkbox = event.target as HTMLInputElement;
+    this.isMeansMode = checkbox.checked;
+    this.vocabularyCurrentList = this.shuffleVocabularyList(this.vocabularyCurrentList);
+    this.currentIndex = 0;
     if (this.showAnswer) {
-      // khi show answer thì luôn bật furigana
-      this.showFurigana = true;
-    } else {
-      // khi tắt show answer thì trả furigana về trạng thái checkbox
-      this.showFurigana = this.baseFuriganaState;
+      this.showAnswer = false;
     }
+    this.cdr.detectChanges();
   }
 
   toggleFurigana(event: Event) {
     const checkbox = event.target as HTMLInputElement;
     this.showFurigana = checkbox.checked;
-    this.baseFuriganaState = !this.baseFuriganaState;
-    // Nếu checkbox bật và đang ở chế độ show answer thì vẫn cho phép hiển thị
-    if (!this.showAnswer) {
-      this.showFurigana = this.baseFuriganaState;
-    }
     this.cdr.detectChanges();
   }
 
@@ -199,7 +197,6 @@ export class FlashcardChapterComponent implements OnInit, OnDestroy {
       )
       .then(async () => {
         await this.updateStatistics();
-        this.showFurigana = this.baseFuriganaState;
         this.nextCard();
         this.cdr.detectChanges();
       })
@@ -207,7 +204,6 @@ export class FlashcardChapterComponent implements OnInit, OnDestroy {
   }
 
   async markAsNotRemembered() {
-    this.showFurigana = this.baseFuriganaState;
     const userId = ensureAuthenticated(this.authService, this.router);
     if (!userId) return;
     const currentVocab = this.getCurrentVocabulary();
@@ -226,7 +222,6 @@ export class FlashcardChapterComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       })
       .catch((error) => {});
-    this.showFurigana = this.baseFuriganaState;
   }
 
   nextCard() {

@@ -1,0 +1,7 @@
+<div class="test-select">
+  <label for="selectId" class="form-label">Chọn ID:</label>
+  <select id="selectId" class="form-select" (change)="onChange($event)">
+    <option value="">-- Chọn --</option>
+    <option *ngFor="let opt of options" [value]="opt">{{ opt }}</option>
+  </select>
+</div>
